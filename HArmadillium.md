@@ -9,22 +9,6 @@
 ---
 
 ### [Introduction to High Availability](https://ubuntu.com/server/docs/introduction-to-high-availability)
-
-### HArmadillium 
-Hardware:
-<img src="https://github.com/universalbit-dev/universalbit-dev/blob/main/docs/assets/images/HP-T610.png" width="10%" />
-<img src="https://github.com/universalbit-dev/universalbit-dev/blob/main/docs/assets/images/HP-T630.png" width="13%" />
-
-##### ubuntu
-Required:<strong>ubuntu repository</strong>
-#[Ubuntu 24.04 LTS Noble] 
-<img src="https://github.com/universalbit-dev/HArmadillium/blob/main/images/software_repositories.png" width="auto"></img>
-
-### Wiring
-<img src="https://github.com/universalbit-dev/HArmadillium/blob/main/images/HArmadillium.jpg" width="auto" />
-
-##### [ipfire](https://github.com/universalbit-dev/universalbit-dev/blob/main/ipfire/readme.md)
-
 ---
 
 ### [Python3](https://www.python.org/) 
