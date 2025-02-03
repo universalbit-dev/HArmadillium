@@ -1,3 +1,4 @@
+![Hyperledger](https://img.shields.io/badge/hyperledger-2F3134?style=for-the-badge&logo=hyperledger&logoColor=white)
 ##### [Support UniversalBit Project](https://github.com/universalbit-dev/universalbit-dev/tree/main/support) -- [Disambiguation](https://en.wikipedia.org/wiki/Wikipedia:Disambiguation) -- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/html_node/index.html) -- [Join Mastodon](https://mastodon.social/invite/wTHp2hSD) -- [Website](https://www.universalbit.it/) -- [Content Delivery Network](https://universalbitcdn.it/)
 
 ---
@@ -70,9 +71,9 @@ ff02::2 ip6-allrouters
 192.168.1.143 armadillium03
 192.168.1.144 armadillium04
 ```
-host setup
+## Host Setup
 * ##### [#01](https://github.com/universalbit-dev/HArmadillium/blob/main/host/01.md) -- [#02](https://github.com/universalbit-dev/HArmadillium/blob/main/host/02.md) -- [#03](https://github.com/universalbit-dev/HArmadillium/blob/main/host/03.md) -- [#04](https://github.com/universalbit-dev/HArmadillium/blob/main/host/04.md)
-#### note : [IPFIRE Adding a Host](https://www.ipfire.org/docs/configuration/network/hosts)
+
 ---
 ## SSH
 ##### SSH connection to communicate with all nodes
