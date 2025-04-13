@@ -342,56 +342,6 @@ sudo openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 sudo rm /etc/nginx/sites-enabled/default
 sudo nano /etc/nginx/sites-enabled/default
 ```
-
-* #armadillium01 <strong>Nginx</strong> configuration file:
-```bash
-#armadillium01 192.168.1.141
-server {
-listen 80;
-listen [::]:80;
-server_name armadillium01;
-return 301 https://$host$request_uri;
-}
-
-server {
-listen 8001;
-server_name armadillium01;
-return 301 https://$host$request_uri;
-}
-    
-upstream websocket {
-    server 192.168.1.141;
-    server 192.168.1.142;
-    server 192.168.1.143;
-    server 192.168.1.144;
-}
-
-server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    server_name armadillium01;
-    root /usr/share/nginx/html;
-    ssl_certificate /etc/nginx/ssl/host.cert;
-    ssl_certificate_key /etc/nginx/ssl/host.key;    
-
-    location / {
-            proxy_buffers 8 32k;
-            proxy_buffer_size 64k;
-            proxy_pass http://websocket;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header Host $http_host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-NginX-Proxy true;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_read_timeout 86400s;
-            proxy_send_timeout 86400s;
-    }
-}
-#armadillium01 systemd[1]: Started nginx.service - A high performance web server and a reverse proxy server.
-
-```
 #### webserver nginx node configuration file:
   * #[01](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/01/default) -- #[02](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/02/default) -- #[03](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/03/default) -- #[04](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/04/default)
 
