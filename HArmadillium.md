@@ -349,7 +349,7 @@ sudo nano /etc/nginx/sites-enabled/default
 sudo service nginx start
 ```
 ##### Alternative to webserver Nginx : (work in progress)
-* [Apache High Availability](https://activemq.apache.org/components/artemis/documentation/latest/ha) -- [WebServer Apache HArmadillium configuration files](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/) #[01](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/01/default.conf) 
+* [Apache High Availability](https://activemq.apache.org/components/artemis/documentation/latest/ha) -- [WebServer Apache HArmadillium configuration files](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/) #[01](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/01/default.conf) -- #[02](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/02/default.conf) -- #[03](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/03/default.conf) -- #[04](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/04/default.conf)   
 * [ClusterLabs Apache HTTP Server as a Cluster Service](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch06.html)
 ---
 
