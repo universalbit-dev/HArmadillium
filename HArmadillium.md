@@ -21,6 +21,7 @@ note:
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
 sudo apt install python3.11
+sudo python3 -m ensurepip --upgrade
 ```
 ##### Alternative Python Setup:
 * [Download and Compile Python3](https://www.python.org/downloads/)
