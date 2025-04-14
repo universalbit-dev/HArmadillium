@@ -25,9 +25,9 @@ sudo python3 -m ensurepip --upgrade
 ```
 ##### Alternative Python Setup:
 * [Download and Compile Python3](https://www.python.org/downloads/)
+* [Get Pip Py](https://pip.pypa.io/en/stable/installation/#get-pip-py)
 * [Getting Started setup-building](https://devguide.python.org/getting-started/setup-building/index.html)
   
-
 ### High Availability Required Packages:
 ```bash
 #[Ubuntu 24.04 LTS Noble]
