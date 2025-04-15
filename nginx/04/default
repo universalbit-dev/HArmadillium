@@ -3,7 +3,7 @@
 # Description:
 # This NGINX configuration is part of a high-availability cluster setup
 # for the 'HArmadillium' project. It includes:
-# - HTTP to HTTPS redirection (ports 80 and 8001).
+# - HTTP to HTTPS redirection (port 80).
 # - Load balancing for WebSocket connections using multiple upstream servers.
 # - HTTPS configuration, including SSL certificates and proxy settings.
 # - Timeout and header settings for WebSocket support.
@@ -16,12 +16,6 @@ server {
     listen 80;
     listen [::]:80;
     server_name armadillium04;
-    return 301 https://$host$request_uri;
-}
-
-server {
-    server_name armadillium04;
-    listen 8001;
     return 301 https://$host$request_uri;
 }
 
