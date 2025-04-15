@@ -350,7 +350,16 @@ sudo nano /etc/nginx/sites-enabled/default
 sudo service nginx start
 ```
 ##### Alternative to webserver Nginx : (work in progress)
-* [Apache High Availability](https://activemq.apache.org/components/artemis/documentation/latest/ha) -- [WebServer Apache HArmadillium configuration files](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/) #[01](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/01/default.conf) -- #[02](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/02/default.conf) -- #[03](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/03/default.conf) -- #[04](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/04/default.conf)   
+* [Apache High Availability](https://activemq.apache.org/components/artemis/documentation/latest/ha) -- [WebServer Apache HArmadillium configuration files](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/) #[01](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/01/default.conf) -- #[02](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/02/default.conf) -- #[03](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/03/default.conf) -- #[04](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/04/default.conf)
+#### self-signed certificate (HTTPS) with OpenSSL (Apache2)
+```
+git clone https://github.com/universalbit-dev/HArmadillium/
+cd HArmadillium/ssl
+sudo mkdir /etc/apache2/ssl
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/host.key -out /etc/apache2/ssl/host.cert --config distinguished.cnf
+sudo openssl dhparam -out /etc/apache2/ssl/dhparam.pem 2048
+```
+
 * [ClusterLabs Apache HTTP Server as a Cluster Service](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch06.html)
 ---
 
