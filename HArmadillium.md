@@ -10,6 +10,18 @@
 * ## [What is High Availability?](https://www.digitalocean.com/community/tutorials/what-is-high-availability)
 
 ---
+This file, `HArmadillium.md`, serves as a continuation of the `ha_cluster_setup.sh` script for configuring a High Availability (HA) cluster. It provides detailed instructions and additional configurations for setting up and managing an HA cluster, including:
+
+1. **Required Packages**: Lists necessary software like `corosync`, `pacemaker`, `fence-agents`, `crmsh`, `pcs`, `nginx`, and more.
+2. **Static IP Setup**: Guides on configuring static IPs for cluster nodes.
+3. **Host File Configuration**: Describes how to set up `/etc/hosts` files for all nodes.
+4. **SSH Setup**: Details establishing secure connections between all cluster nodes.
+5. **Firewall (UFW) Rules**: Provides firewall configuration to ensure proper communication between nodes.
+6. **Corosync Configuration**: Includes setup for the `corosync.conf` file and security keys for inter-node communication.
+7. **PCS and Pacemaker Configuration**: Explains how to authenticate nodes, disable STONITH, set quorum policies, and create resources like web servers and floating IPs.
+8. **Web Server Setup**: Offers configurations for using Nginx or Apache as reverse proxies for HA purposes.
+
+This document complements the `ha_cluster_setup.sh` script by detailing the manual configurations and additional setups needed to complete the HA cluster configuration process.
 
 ### [Introduction to High Availability](https://ubuntu.com/server/docs/introduction-to-high-availability)
 ---
