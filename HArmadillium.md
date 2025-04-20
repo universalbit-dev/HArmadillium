@@ -27,7 +27,7 @@ This file, `HArmadillium.md`, serves as a continuation of the `ha_cluster_setup.
 
 This document complements the `ha_cluster_setup.sh` script by detailing the manual configurations and additional setups needed to complete the HA cluster configuration process.
 
-### [Learn More to High Availability](https://ubuntu.com/server/docs/introduction-to-high-availability)
+### [Learn More About High Availability](https://ubuntu.com/server/docs/introduction-to-high-availability)
 ---
 
 ### [Python3](https://www.python.org/) 
