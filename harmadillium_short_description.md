@@ -1,40 +1,79 @@
-####COPILOT EXPLAIN
+#### Overview
+This document provides a comprehensive guide to setting up a High Availability (HA) Cluster on Ubuntu, leveraging tools like Corosync, Pacemaker, and Nginx. It includes step-by-step instructions, hardware and software requirements, and troubleshooting tips to ensure a smooth deployment.
 
-This `HArmadillium.md` file provides a detailed guide for setting up a high availability (HA) cluster using various tools and software on Ubuntu. Here's a breakdown of its content:
+---
+
+### Table of Contents
+1. [Support and References](#support-and-references)
+2. [Introduction and Setup](#introduction-and-setup)
+3. [Hardware and Software Requirements](#hardware-and-software-requirements)
+4. [High Availability Packages](#high-availability-packages)
+5. [Configuration Sections](#configuration-sections)
+6. [High Availability Tools Configuration](#high-availability-tools-configuration)
+7. [Web Server Setup](#web-server-setup)
+8. [Troubleshooting](#troubleshooting)
+9. [Additional Resources](#additional-resources)
+
+---
 
 ### Support and References
-- Links to support the UniversalBit Project and disambiguation pages.
+- Explore links to support the UniversalBit Project.
+
+---
 
 ### Introduction and Setup
-- **ThinClient Setup**: Instructions and image links for setting up Armadillium.
-- **High Availability Introduction**: Links to articles explaining high availability concepts.
+- **ThinClient Setup**: Learn how to set up the Armadillium ThinClient with detailed instructions.
+- **High Availability Concepts**: Access beginner-friendly articles explaining HA principles.
+
+---
 
 ### Hardware and Software Requirements
-- **Hardware**: Images of supported hardware (HP-T610, HP-T630).
-- **Software**: Instructions for setting up the required Ubuntu repository and installing Python 3.11 via the Deadsnakes PPA.
+- **Hardware**:
+  - ThinClients: HP-T610, HP-T630
+- **Software**:
+  - Configure Ubuntu repositories.
+  - Install Python 3.11 via the Deadsnakes PPA.
+
+---
 
 ### High Availability Packages
-- A list of packages required for high availability on Ubuntu 24.04 LTS.
+- Explore the required packages for setting up HA on Ubuntu 24.04 LTS.
+
+---
 
 ### Configuration Sections
-- **Static IP**: Link to a tutorial on setting a static IP.
-- **Host Setup**: Instructions for editing the host file on each node.
-- **SSH Setup**: Instructions for setting up SSH connections between nodes.
-- **Firewall (UFW)**: Commands to allow firewall rules for each node.
+- **Static IP**: Follow a [step-by-step tutorial](#) for setting a static IP address.
+- **Host Setup**: Edit the `hosts` file for seamless node communication.
+- **SSH Configuration**: Establish secure SSH connections between nodes.
+- **Firewall (UFW)**: Apply appropriate firewall rules for node protection.
+
+---
 
 ### High Availability Tools Configuration
-- **Corosync**: Instructions for configuring and starting the Corosync cluster engine.
-- **CRM**: Link to the CRM setup guide.
-- **PCS**: Instructions for setting up and configuring PCS, including creating resources and constraints.
+- **Corosync**:
+  - Configure and start the Corosync cluster engine.
+- **CRM**:
+  - Access a [detailed guide](#) for CRM setup.
+- **PCS**:
+  - Set up PCS, including resource creation and constraint configuration.
+
+---
 
 ### Web Server Setup
-- **Nginx Setup**: Instructions for setting up Nginx as a reverse proxy and configuring SSL with OpenSSL.
-- **Alternative Web Servers**: Links to resources for setting up Apache as an alternative.
+- **Nginx Setup**:
+  - Set up Nginx as a reverse proxy.
+  - Configure SSL using OpenSSL.
+- **Alternative Web Servers**:
+  - Access resources for setting up Apache as an alternative.
+
+---
 
 ### Troubleshooting
-- Solutions for common issues, such as starting the PCSD service and checking cluster status.
+- Resolve common issues, like starting the PCSD service and checking cluster status.
+
+---
 
 ### Additional Resources
-- A comprehensive list of resources for learning more about high availability, clustering, and related tools.
+- A curated list of resources to deepen your understanding of HA, clustering, and related tools.
 
-This guide is comprehensive and includes all the necessary steps and links to set up and maintain a high availability cluster using Corosync, Pacemaker, PCS, and Nginx on Ubuntu.
+---
