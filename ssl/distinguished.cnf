@@ -20,7 +20,6 @@ L                      = Rome
 O                      = UniversalBit
 OU                     = universalbit
 CN                     = unbt
-emailAddress           = lazzaragiuliano@gmail.com
 
 # certificate authority configuration
 [ ca_ext ]
