@@ -17,3 +17,52 @@ For detailed instructions and usage, refer to the [generate_and_deploy_corosync.
 ## Note
 
 Corosync is only part of the HArmadillium HA cluster configuration. To complete the setup, additional components such as PCS and resource agents must also be configured. Refer to the main repository and related documentation for further details.
+
+To integrate the `PCMK` configuration into the repository, follow these steps:
+
+### 1. **Create the `PCMK` File in Corosync Service Directory**
+   - Run the following commands to create the necessary directory and file:
+     ```bash
+     sudo mkdir -p /etc/corosync/service.d
+     sudo nano /etc/corosync/service.d/pcmk
+     ```
+
+### 2. **Add the Required Service Block**
+   - Inside the `pcmk` file, add the following service configuration:
+     ```plaintext
+     service {
+       name: pacemaker
+       ver: 1
+     }
+     ```
+
+### 3. **Important Considerations**
+   - Ensure this step is performed **after generating the `corosync.conf` file**.
+   - Make sure the `corosync-keygen` file is properly generated and copied to the appropriate location.
+
+### Suggested Integration in the `corosync/readme.md` File
+Add the above steps to the `corosync/readme.md` file to document the process. Here's an example of how it can be written:
+
+## Configuring Pacemaker (PCMK) Service in Corosync
+
+### Create the `PCMK` File
+Run the following commands to create the `pcmk` service configuration file:
+
+```bash
+sudo mkdir -p /etc/corosync/service.d
+sudo nano /etc/corosync/service.d/pcmk
+```
+
+### Add the Service Configuration
+Add the following content to the `pcmk` file:
+
+```plaintext
+service {
+  name: pacemaker
+  ver: 1
+}
+```
+
+### Notes:
+- This step must be performed **after** generating the `corosync.conf` file.
+
