@@ -4,16 +4,6 @@
 # Script Name: generate_and_deploy_corosync.sh
 # Description: Automates the generation and deployment of the Corosync 
 #              configuration file (corosync.conf) for setting up an HA cluster.
-#
-# Enhanced for `totem` configuration with additional parameters:
-# - cluster_name, transport, interface, nodelist, logging, and service sections.
-#
-# Usage:
-#   ./generate_and_deploy_corosync.sh
-#
-# Prerequisites:
-# - Corosync must be installed on all nodes.
-# - SSH access must be configured between nodes.
 # ===============================================================
 
 # Variables
@@ -37,17 +27,41 @@ log_message() {
 # Function to check prerequisites
 check_prerequisites() {
     log_message "Checking prerequisites..."
+    command -v corosync-keygen >/dev/null 2>&1 || { log_message "Error: 'corosync-keygen' command not found."; exit 1; }
     command -v scp >/dev/null 2>&1 || { log_message "Error: 'scp' command not found."; exit 1; }
     command -v ssh >/dev/null 2>&1 || { log_message "Error: 'ssh' command not found."; exit 1; }
     log_message "All prerequisites are met."
 }
 
-# Step 1: Prompt the User for Input
+# Function to handle corosync key generation
+generate_corosync_key() {
+    log_message "Generating Corosync authentication key..."
+    local attempts=0
+    local max_attempts=3
+
+    while (( attempts < max_attempts )); do
+        corosync-keygen -l
+        if [[ $? -eq 0 ]]; then
+            log_message "Corosync authentication key generated successfully."
+            return 0
+        else
+            log_message "Failed to generate Corosync authentication key. Attempt $((attempts + 1)) of $max_attempts."
+        fi
+        ((attempts++))
+    done
+
+    log_message "Maximum attempts to generate Corosync authentication key reached. Shutting down gracefully..."
+    exit 1
+}
+
+# Function to prompt user for input
 prompt_user_input() {
     log_message "Prompting user for input..."
+    local attempts=0
+    local max_attempts=3
 
     # Prompt for bindnetaddr
-    while true; do
+    while (( attempts < max_attempts )); do
         echo "Enter the bindnetaddr (e.g., 192.168.1.140):"
         read -r BINDNETADDR
         if [[ -n "$BINDNETADDR" ]]; then
@@ -55,10 +69,19 @@ prompt_user_input() {
         else
             echo "Invalid input. Please try again."
         fi
+        ((attempts++))
     done
 
+    if (( attempts == max_attempts )); then
+        log_message "Maximum invalid input attempts reached. Shutting down gracefully..."
+        exit 1
+    fi
+
+    # Reset attempts for the next input
+    attempts=0
+
     # Prompt for cluster nodes
-    while true; do
+    while (( attempts < max_attempts )); do
         echo "Enter the cluster nodes (comma-separated, e.g., 192.168.1.141,192.168.1.142,...):"
         read -r CLUSTER_NODES_INPUT
         if [[ -n "$CLUSTER_NODES_INPUT" ]]; then
@@ -67,12 +90,18 @@ prompt_user_input() {
         else
             echo "Invalid input. Please try again."
         fi
+        ((attempts++))
     done
+
+    if (( attempts == max_attempts )); then
+        log_message "Maximum invalid input attempts reached. Shutting down gracefully..."
+        exit 1
+    fi
 
     log_message "User input received. Cluster nodes: ${CLUSTER_NODES[*]}, bindnetaddr: $BINDNETADDR"
 }
 
-# Step 2: Generate corosync.conf
+# Function to generate corosync.conf
 generate_corosync_conf() {
     log_message "Generating corosync.conf..."
 
@@ -91,7 +120,6 @@ totem {
 nodelist {
 EOL
 
-    # Add each cluster node to the nodelist
     NODE_ID=1
     for node in "${CLUSTER_NODES[@]}"; do
         echo "  node {" >> "$OUTPUT_CONF"
@@ -119,7 +147,7 @@ EOL
     log_message "Corosync configuration file generated: ${OUTPUT_CONF}"
 }
 
-# Step 3: Deploy corosync.conf to the remote node
+# Function to deploy corosync.conf to the remote node
 deploy_corosync_conf() {
     log_message "Deploying corosync.conf..."
     while true; do
@@ -133,14 +161,20 @@ deploy_corosync_conf() {
     done
 
     while true; do
-        echo "Please specify the remote node (hostname or IP, e.g., node2 or 192.168.1.2):"
-        read -r REMOTE_NODE
-        if [[ -n "$REMOTE_NODE" ]]; then
+    echo "Please specify the remote node (hostname or IP, e.g., armadillium01 or 192.168.1.141):"
+    read -r REMOTE_NODE
+    if [[ -n "$REMOTE_NODE" ]]; then
+        echo "You entered: $REMOTE_NODE. Is this correct? (yes/no)"
+        read -r CONFIRM
+        if [[ "$CONFIRM" == "yes" ]]; then
             break
         else
-            echo "Invalid input. Please try again."
+            echo "Let's try again."
         fi
-    done
+    else
+        echo "Invalid input. Please try again."
+    fi
+done
 
     if scp "$OUTPUT_CONF" "${SSH_USER}@${REMOTE_NODE}:/etc/corosync/corosync.conf"; then
         log_message "Configuration file successfully copied to $REMOTE_NODE."
@@ -156,10 +190,36 @@ deploy_corosync_conf() {
     fi
 }
 
+# Function to generate Corosync authentication key and distribute it
+generate_and_distribute_corosync_key() {
+    log_message "Generating Corosync authentication key on armadillium01..."
+    sudo corosync-keygen
+    if [[ $? -ne 0 ]]; then
+        log_message "Error: Failed to generate Corosync authentication key."
+        exit 1
+    fi
+    log_message "Corosync authentication key generated successfully."
+
+    # Securely copy the authkey to other cluster nodes
+    log_message "Distributing Corosync authentication key to other nodes..."
+    local nodes=("armadillium02@192.168.1.142" "armadillium03@192.168.1.143" "armadillium04@192.168.1.144")
+    for node in "${nodes[@]}"; do
+        sudo scp /etc/corosync/authkey "${node}:/tmp"
+        if [[ $? -ne 0 ]]; then
+            log_message "Error: Failed to copy Corosync authentication key to ${node}."
+            exit 1
+        else
+            log_message "Authentication key successfully copied to ${node}."
+        fi
+    done
+}
+
 # Main Execution
 main() {
     log_message "Starting Corosync configuration setup..."
     check_prerequisites
+    generate_corosync_key
+    generate_and_distribute_corosync_key
     prompt_user_input
     generate_corosync_conf
     deploy_corosync_conf
