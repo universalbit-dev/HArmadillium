@@ -47,15 +47,17 @@ server {
     }
 }
 ```
+[HArmadillium Nginx Configuration](https://github.com/universalbit-dev/HArmadillium/tree/main/nginx)
 
 #### **Apache Example**:
 ```apache
-<VirtualHost *:80>
+<VirtualHost *:8080>
     ServerName example.com
     ProxyPass / http://192.168.1.140/
     ProxyPassReverse / http://192.168.1.140/
 </VirtualHost>
 ```
+[HArmadillium Apache Configuration](https://github.com/universalbit-dev/HArmadillium/tree/main/apache)
 
 ---
 
