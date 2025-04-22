@@ -11,7 +11,7 @@ The Nginx webserver plays a critical role in the HArmadillium High Availability 
    - It ensures the availability of web services by automatically restarting or relocating the service in case of a node failure.
 
 2. **Virtual IP**:
-   - A virtual IP (VIP) is assigned to the Nginx resource, allowing clients to access the webserver without depending on specific node IP addresses.
+   - A virtual IP ([VIP](https://github.com/universalbit-dev/HArmadillium/blob/main/vip.md)) is assigned to the Nginx resource, allowing clients to access the webserver without depending on specific node IP addresses.
    - The VIP ensures that requests are routed to the active node hosting the Nginx service.
 
 3. **High Availability**:
