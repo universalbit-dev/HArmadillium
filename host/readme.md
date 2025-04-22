@@ -1,80 +1,73 @@
-#### Host Setup
+### Hostname and `/etc/hosts` in Ubuntu
 
-```bash
-sudo nano /etc/hosts
-```
+#### **What is a Hostname?**
+A **hostname** is a human-readable label assigned to a device on a network. It uniquely identifies a machine and allows devices to communicate with each other using names instead of IP addresses. In a High Availability (HA) cluster like **HArmadillium**, hostnames simplify configuration and communication between the nodes.
 
-#<strong>01</strong>
-edit host file for armadillium01 machine (192.168.1.141) 
+For example, the hostnames in the HArmadillium cluster are:
+- `armadillium01`
+- `armadillium02`
+- `armadillium03`
+- `armadillium04`
 
-```bash
-127.0.0.1       localhost
-127.0.1.1       armadillium01
+These hostnames correspond to individual nodes in the cluster.
 
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
+---
 
+#### **What is `/etc/hosts`?**
+The `/etc/hosts` file is a local configuration file used to map hostnames to IP addresses. It provides a static way to resolve hostnames without relying on an external DNS server. This is especially useful during initial setups or in environments where DNS is unavailable.
+
+---
+
+#### **Functions of `/etc/hosts`**
+1. **Local Name Resolution**: Maps hostnames to their corresponding IP addresses for use within the local network.
+2. **Simplifies Communication**: Enables nodes to communicate with each other using human-readable names instead of hard-to-remember IP addresses.
+3. **DNS Fallback**: Acts as a backup in case DNS servers are unreachable or not configured.
+
+---
+
+#### **Configuring `/etc/hosts` for HArmadillium**
+To ensure seamless communication in the HArmadillium cluster, you need to edit the `/etc/hosts` file on each node to map the hostnames to their respective IP addresses. Below is the configuration example for HArmadillium:
+
+```plaintext
+192.168.1.141 armadillium01
 192.168.1.142 armadillium02
 192.168.1.143 armadillium03
 192.168.1.144 armadillium04
 ```
 
-#<strong>02</strong>
-edit host file for armadillium02 machine (192.168.1.142) 
-```bash
-127.0.0.1       localhost
-127.0.1.1       armadillium02
+This ensures that each node can be referenced by its hostname, simplifying cluster management.
 
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
+---
 
-192.168.1.141 armadillium01
-192.168.1.143 armadillium03
-192.168.1.144 armadillium04
-```
+#### **Steps to Edit `/etc/hosts` in Ubuntu**
+Follow these steps to configure the `/etc/hosts` file on each node:
 
-#<strong>03</strong>
-edit host file for armadillium03 machine (192.168.1.143) 
-```bash
-127.0.0.1       localhost
-127.0.1.1       armadillium03
+1. Open the `/etc/hosts` file with a text editor (e.g., `nano`):
+   ```bash
+   sudo nano /etc/hosts
+   ```
+2. Add or update the following lines:
+   ```plaintext
+   192.168.1.141 armadillium01
+   192.168.1.142 armadillium02
+   192.168.1.143 armadillium03
+   192.168.1.144 armadillium04
+   ```
+3. Save and close the file:
+   - In `nano`, press `CTRL+O` to save and `CTRL+X` to exit.
+4. Verify the changes by pinging a hostname:
+   ```bash
+   ping armadillium01
+   ```
 
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
+---
 
-192.168.1.141 armadillium01
-192.168.1.142 armadillium02
-192.168.1.144 armadillium04
-```
+#### **Best Practices**
+- **Ensure Consistency**: The `/etc/hosts` file should be identical across all nodes in the cluster to avoid communication issues.
+- **Backup Before Editing**: Always create a backup of the `/etc/hosts` file before making changes:
+  ```bash
+  sudo cp /etc/hosts /etc/hosts.bak
+  ```
+- **Use Descriptive Hostnames**: Use meaningful hostnames that clearly specify the role or identity of each node in the cluster.
 
-#<strong>04</strong>
-edit host file for armadillium04 machine (192.168.1.144) 
-```bash
-127.0.0.1       localhost
-127.0.1.1       armadillium04
-
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-
-192.168.1.141 armadillium01
-192.168.1.142 armadillium02
-192.168.1.143 armadillium03
-```
-
-
+---
