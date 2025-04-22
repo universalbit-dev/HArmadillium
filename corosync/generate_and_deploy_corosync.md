@@ -3,10 +3,10 @@ The `generate_and_deploy_corosync.sh` script operates as follows:
 ### How the Script Works
 1. **Prompting User Input**:
    - The script asks for:
-     - Cluster nodes (comma-separated, e.g., `node1,node2,node3,node4`).
-     - Primary node (e.g., `node1`).
-     - SSH username (e.g., `root`, `ubuntu`).
-     - Remote node (hostname or IP, e.g., `node2` or `192.168.1.2`).
+     - Cluster nodes (comma-separated, e.g., `armadillium01,armadillium02,armadillium03,armadillium04`).
+     - Primary node (e.g., `armadillium01`).
+     - SSH username (e.g., `root`, `armadillium01`).
+     - Remote node (hostname or IP, e.g., `armadillium02` or `192.168.1.142`).
 
 2. **Generating `corosync.conf`**:
    - Uses a template (`corosync-template.conf`) and replaces placeholders (e.g., `{{NODES}}`) with user-provided cluster nodes.
@@ -30,10 +30,10 @@ The `generate_and_deploy_corosync.sh` script operates as follows:
    ```
 2. Provide inputs as prompted:
    ```
-   Define the cluster nodes: node1,node2,node3,node4
-   Define the primary node: node1
-   SSH username: ubuntu
-   Remote node: 192.168.1.2
+   Define the cluster nodes: armadillium01,armadillium02,armadillium03,armadillium04
+   Define the primary node: armadillium01
+   SSH username: armadillium02
+   Remote node: 192.168.1.142
    ```
 3. The script will:
    - Generate `corosync.conf`.
