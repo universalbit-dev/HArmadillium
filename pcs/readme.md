@@ -35,7 +35,7 @@
 ---
 
 ### Additional Information
-For more details on configuring `corosync.conf`, refer to the [official Pacemaker documentation](https://clusterlabs.org/pacemaker/doc/).
+For more details on configuring `corosync.conf`, refer to the [corosync](https://github.com/universalbit-dev/HArmadillium/blob/main/corosync/generate_and_deploy_corosync.md).
 
 Errors during execution will be handled gracefully, and any misconfigurations will prompt retries or exit the script cleanly. Ensure you run the script with `sudo` privileges to avoid permission issues.
 
