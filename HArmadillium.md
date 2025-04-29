@@ -420,6 +420,16 @@ sudo service apache2 start
 - [ClusterLabs: Apache HTTP Server as a Cluster Service](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch06.html)  
 
 ---
+
+
+### Virtual IP (VIP) Configuration for High Availability
+
+To ensure optimal High Availability (HA) performance, it is highly recommended to use a **single Virtual IP (VIP)** for your web server configuration. A VIP simplifies failover management by directing traffic to the active node, which is managed by clustering software like Pacemaker.
+
+For advanced configurations, including load balancing across multiple nodes, ensure proper health checks and synchronization of all nodes. Full details are available in the [VIP Configuration Guide](https://github.com/universalbit-dev/HArmadillium/blob/main/vip.md).
+
+---
+
 ### Troubleshooter
 
 #### Common Error:
