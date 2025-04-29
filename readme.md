@@ -50,9 +50,9 @@ Operative System:
 * [Ubuntu 24.04 LTS](https://ubuntu.com/download/desktop#community)
 
 ---
-* [Nginx](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#webserver) -- [Nginx configuration file](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#nginx-configuration)
-* [HTTPS](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#self-signed-certificate-https-with-openssl) 
-* [SSH](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#ssh-connection-to-communicate-with-all-nodes)
+* [Nginx Setup](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#webserver) — [Nginx Configuration Guide](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#nginx-configuration)  
+* [Enable HTTPS with Self-Signed Certificate](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#self-signed-certificate-https-with-openssl)  
+* [Establish SSH Connections](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#ssh-connection-to-communicate-with-all-nodes)  
 
 ##### Basic Security (If needed,use this: [SELKS](https://github.com/universalbit-dev/SELKS/pkgs/container/arkimeviewer))
 * [UFW](https://manpages.ubuntu.com/manpages/bionic/en/man8/ufw.8.html) -- [UFW Firewall setup](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#ufw-firewall-rules-for-each-node)
