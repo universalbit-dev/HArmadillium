@@ -25,10 +25,10 @@ The following virtual IP is shared among the nodes in the cluster:
 - **VIP**: `192.168.1.140`
 
 This VIP is dynamically assigned to one of the following nodes based on availability:
-- `armadillium01`
-- `armadillium02`
-- `armadillium03`
-- `armadillium04`
+- [`armadillium01`](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/01/default)
+- [`armadillium02`](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/02/default)
+- [`armadillium03`](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/03/default)
+- [`armadillium04`](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/04/default)
 
 The VIP ensures that clients can always access the webserver, regardless of which node is currently active.
 
