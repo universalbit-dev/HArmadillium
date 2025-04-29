@@ -9,8 +9,6 @@
 
 * ## [What is High Availability?](https://www.digitalocean.com/community/tutorials/what-is-high-availability)
 
----
-This file, `HArmadillium.md`, serves as a continuation of the `ha_cluster_setup.sh` script for configuring a High Availability (HA) cluster. It provides detailed instructions and additional configurations for setting up and managing an HA cluster, including:
 
 **Required Packages**: Lists necessary software like `python3`, `corosync`, `pacemaker`, `fence-agents`, `crmsh`, `pcs`, `nginx`, and more.
 
@@ -44,43 +42,37 @@ sudo python3 -m ensurepip --upgrade
 * [Get Pip Py](https://pip.pypa.io/en/stable/installation/#get-pip-py)
 * [Getting Started setup-building](https://devguide.python.org/getting-started/setup-building/index.html)
   
-### High Availability Required Packages:
+
+For **Ubuntu 24.04 LTS (Noble)**, install the following packages:  
 ```bash
-#[Ubuntu 24.04 LTS Noble]
 sudo apt install corosync pacemaker fence-agents crmsh pcs* cluster-glue ufw nginx haveged heartbeat openssh-server openssh-client
 ```
----
 
-Getting <strong>Wiki</strong>:
-* [Corosync-PCS-PaceMaker](https://wiki.debian.org/Debian-HA/ClustersFromScratch)
----
+### Static IP
 
-## StaticIP
-[Setup Static IP](https://www.freecodecamp.org/news/setting-a-static-ip-in-ubuntu-linux-ip-address-tutorial/)
+**[Setup Static IP Address](https://www.freecodecamp.org/news/setting-a-static-ip-in-ubuntu-linux-ip-address-tutorial/)**  
 
----
+Ensure that each node is configured with a static IP address by following the setup guide linked above.
 
-## [Host]
-* edit host file <strong>TO</strong> each node
+### Host
+
+**Edit the Host File for Each Node**  
+To configure the host file on each node, use the following command:  
 ```bash
 sudo nano /etc/hosts
 ```
-* [Setup](https://github.com/universalbit-dev/HArmadillium/blob/main/host/readme.md)
 
----
+**Reference:**  
+- [Setup Instructions](https://github.com/universalbit-dev/HArmadillium/blob/main/host/readme.md)  
 
-## SSH
-##### [SSH connection](https://github.com/universalbit-dev/HArmadillium/tree/main/ssh#ssh-connection-overview) to communicate with all nodes
-* [OpenSSH](https://documentation.ubuntu.com/server/how-to/security/openssh-server/index.html) 
-* [Docs](https://www.openssh.com/manual.html)
-* [SSH-Essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys)
----
+**Note:** Ensure that the host file is properly edited and configured on every node.
 
-## UFW
-## Firewall Rules TO each node
--Description:
-The Uncomplicated FireWall is a front-end for iptables, to make managing a Netfilter firewall easier. It provides a command line interface with syntax similar to OpenBSD's Packet Filter. It is particularly well-suited as a host-based firewall.
 
+### UFW Firewall Rules for Each Node
+
+The Uncomplicated Firewall (UFW) is a user-friendly front-end for managing iptables, simplifying the process of configuring a Netfilter firewall. It provides a command-line interface with syntax inspired by OpenBSD's Packet Filter, making it an excellent choice for a host-based firewall.
+
+**Commands for Configuration:**
 ```bash
 sudo ufw allow from 192.168.1.141
 sudo ufw allow from 192.168.1.142
@@ -88,11 +80,24 @@ sudo ufw allow from 192.168.1.143
 sudo ufw allow from 192.168.1.144
 sudo ufw allow ssh
 ```
-[firewall rules](https://github.com/universalbit-dev/HArmadillium/tree/main/ufw)
+
+**Note:**  
+Ensure that these firewall rules are applied to each node to maintain proper network access and security.
+
+### SSH Connection to Communicate with All Nodes
+
+**OpenSSH**  
+Ensure that each node has SSH enabled to allow secure communication between nodes. OpenSSH is a widely-used tool for managing secure shell (SSH) connections, providing encryption for data transfer and remote command execution.
+
+**References:**
+- [OpenSSH Documentation](https://www.openssh.com/)
+- [SSH Essentials](https://www.ssh.com/academy/ssh)
+
+**Note:**  
+To maintain proper connectivity, verify that SSH is enabled and properly configured on all nodes.
 
 ---
 
-#### High Availability
 ## Corosync
 * [Corosync](https://packages.debian.org/sid/corosync) cluster engine daemon and utilities
 ##### The Corosync Cluster Engine is a Group Communication System with additional features for implementing high availability within applications. 
@@ -188,95 +193,123 @@ sudo chmod 400 /etc/corosync/authkey
 [corosync setup](https://github.com/universalbit-dev/HArmadillium/tree/main/corosync)
 
 ---
-## CRM 
-#### Consider this configuration tool as an alternative to PCS.
-[Cluster Setup](https://crmsh.github.io/start-guide/)
 
----
+## PCS: Pacemaker Configuration System  
 
-## PCS
-* [PCS](https://packages.debian.org/buster/pcs) Pacemaker Configuration System
-  
--Description:
-It permits users to easily view, modify and create pacemaker based clusters.
-pcs also provides pcsd, which operates as a GUI and remote server for PCS.
+PCS simplifies the management of Pacemaker-based clusters, allowing users to easily view, modify, and create clusters. It also includes `pcsd`, which acts as both a graphical user interface (GUI) and a remote server for managing PCS.
+
+### Start the PCS Service
 ```bash
 sudo service pcsd start
 ```
-#### PCS Create Password  and authenticate localhost
+
+### Set Password and Authenticate Localhost
+#### Create Password for `hacluster` User
 ```bash
-#armadillium01
+# On armadillium01
 sudo passwd hacluster
 ```
-#### authenticate localhost
+
+#### Authenticate Localhost
 ```bash
 sudo pcs client local-auth
-#Username: hacluster
-#Password: 
-#localhost: Authorized
+# Username: hacluster
+# Password:
+# localhost: Authorized
 ```
-#### PCS AUTH authorize/authenticate host
+
+### Authorize/Authenticate Hosts
+#### Authenticate Cluster Nodes
 ```bash
-#armadillium01
+# On armadillium01
 sudo pcs host auth armadillium01 armadillium02 armadillium03 armadillium04
-#Username: hacluster
-#Password:
-#armadillium01: Authorized
-#armadillium02: Authorized
-#armadillium03: Authorized
-#armadillium04: Authorized
+# Username: hacluster
+# Password:
+# armadillium01: Authorized
+# armadillium02: Authorized
+# armadillium03: Authorized
+# armadillium04: Authorized
 ```
 
-[ClusterLabs](https://clusterlabs.org/pacemaker/doc/2.1/Clusters_from_Scratch/html/cluster-setup.html) (3.3.2. Enable pcs Daemon)
+**Reference:**  
+[ClusterLabs: Enable pcs Daemon](https://clusterlabs.org/pacemaker/doc/2.1/Clusters_from_Scratch/html/cluster-setup.html) (3.3.2. Enable pcs Daemon)
 
-* ##### Disable STONITH 
+---
+
+### PCS Cluster Configuration  
+
+#### Disable STONITH
 ```bash
 sudo pcs property set stonith-enabled=false
 ```
-* ##### Ignore Quorum policy
+
+#### Ignore Quorum Policy
 ```bash
 sudo pcs property set no-quorum-policy=ignore
 ```
-* ##### [PCS Create Resources](https://www.golinuxcloud.com/create-cluster-resource-in-ha-cluster-examples/):
-* ##### Create WebServer Resource
+
+---
+
+### Create Resources
+#### Install Required Resource Agents
 ```bash
 sudo apt install resource-agents-extra
+```
+
+#### Create Web Server Resource
+```bash
 sudo pcs resource create webserver ocf:heartbeat:nginx configfile=/etc/nginx/nginx.conf op monitor timeout="5s" interval="5s"
 ```
-### ClusterLabs [Resource Agents](https://github.com/ClusterLabs/resource-agents)
 
-* ##### Create PCS FLOATING IP Resource:
+**Reference:**  
+[PCS Create Resources](https://www.golinuxcloud.com/create-cluster-resource-in-ha-cluster-examples/)  
+[ClusterLabs Resource Agents](https://github.com/ClusterLabs/resource-agents)
+
+---
+
+### Create Floating IP Resource
+#### Add Floating IP
 ```bash
 sudo pcs resource create virtual_ip ocf:heartbeat:IPaddr2 ip=192.168.1.140 cidr_netmask=32 op monitor interval=30s
-#crm configure primitive virtual_ip ocf:heartbeat:IPaddr2 params ip="192.168.1.140" cidr_netmask="32" op monitor interval="10s" meta migration-threshold="10"
 ```
-##### Constraint:
+
+#### Add Constraints
+##### Colocation Constraint
 ```bash
 sudo pcs constraint colocation add webserver with virtual_ip INFINITY
 ```
+
+##### Order Constraint
 ```bash
 sudo pcs constraint order webserver then virtual_ip
-#Adding webserver virtual_ip (kind: Mandatory) (Options: first-action=start then-action=start)
-
+# Adding webserver virtual_ip (kind: Mandatory) (Options: first-action=start then-action=start)
 ```
-#### note:
-* [ClusterLabs Enable pcs Daemon ](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/2.0/html/Clusters_from_Scratch/_enable_pcs_daemon.html)
 
+---
 
-* ##### Start PCS cluster and enable all
+### Start and Enable the Cluster
 ```bash
 sudo pcs cluster start --all
 sudo pcs cluster enable --all
-#armadillium01: Starting Cluster...
-#armadillium02: Starting Cluster...
-#armadillium03: Starting Cluster...
-#armadillium04: Starting Cluster...
-#armadillium01: Cluster Enabled
-#armadillium02: Cluster Enabled
-#armadillium03: Cluster Enabled
-#armadillium04: Cluster Enabled
-
+# armadillium01: Starting Cluster...
+# armadillium02: Starting Cluster...
+# armadillium03: Starting Cluster...
+# armadillium04: Starting Cluster...
+# armadillium01: Cluster Enabled
+# armadillium02: Cluster Enabled
+# armadillium03: Cluster Enabled
+# armadillium04: Cluster Enabled
 ```
+
+**Note:**  
+- For additional details, refer to [ClusterLabs Enable pcs Daemon](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/2.0/html/Clusters_from_Scratch/_enable_pcs_daemon.html).
+  
+## CRM 
+#### Consider this configuration tool as an alternative to PCS.
+[Setup](https://crmsh.github.io/start-guide/)
+
+---
+
 ---
 ## Pacemaker
 ## Cluster Resource Manager:
@@ -289,31 +322,37 @@ Pacemaker understands many different resource types (OCF, SYSV, systemd) and can
 sudo update-rc.d pacemaker defaults 20 01
 ```
 ---
-
 ## PCMK
-* ##### Create PCMK file
-```bash 
-sudo mkdir /etc/corosync/service.d
-sudo nano /etc/corosync/service.d/pcmk
-```
-* ##### add this
-```bash
-service {
-  name: pacemaker
-  ver: 1
-}
-```
 
----
+#### Create the PCMK Configuration File
+1. Create the necessary directory and file:
+   ```bash
+   sudo mkdir /etc/corosync/service.d
+   sudo nano /etc/corosync/service.d/pcmk
+   ```
+
+2. Add the following content to the file:
+   ```bash
+   service {
+     name: pacemaker
+     ver: 1
+   }
+   ```
 ## Webserver
-* ##### Nginx as Reverse Proxy
+
+#### Nginx as a Reverse Proxy
+Install the necessary packages for setting up Nginx as a reverse proxy:  
 ```bash
 sudo apt install openssl nginx git -y
 ```
-[OpenSSL](https://github.com/openssl/openssl) WebServer 
+
+**Reference:**  
+[OpenSSL WebServer](https://nginx.org/en/docs/http/configuring_https_servers.html)
 
 ## [HTTPS]
-#### self-signed certificate (HTTPS) with OpenSSL 
+
+### Self-Signed Certificate (HTTPS) with OpenSSL
+Generate a self-signed certificate using OpenSSL:
 ```bash
 git clone https://github.com/universalbit-dev/HArmadillium/
 cd HArmadillium/ssl
@@ -322,22 +361,45 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/
 sudo openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 ```
 
-## Nginx Configuration File (default)
-* edit the Nginx default file 
+---
+
+## Nginx Configuration
+
+### Default Configuration
+Edit the default Nginx configuration file:
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
 sudo nano /etc/nginx/sites-enabled/default
 ```
-#### webserver nginx node configuration file:
-  * #[01](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/01/default) -- #[02](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/02/default) -- #[03](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/03/default) -- #[04](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/04/default)
 
-```
+### Webserver Nginx Node Configuration
+Refer to the node-specific Nginx configuration files:  
+- [Node 01 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/01/default)  
+- [Node 02 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/02/default)  
+- [Node 03 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/03/default)  
+- [Node 04 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/04/default)  
+
+Start the Nginx service:
+```bash
 sudo service nginx start
 ```
-##### Alternative to webserver Nginx
-* [Apache High Availability](https://activemq.apache.org/components/artemis/documentation/latest/ha) -- [WebServer Apache HArmadillium configuration files](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/) #[01](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/01/000-default.conf) -- #[02](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/02/000-default.conf) -- #[03](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/03/000-default.conf) -- #[04](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/04/000-default.conf)
-#### self-signed certificate (HTTPS) with OpenSSL (Apache2)
-```
+
+---
+
+## Alternative Webserver: Apache
+
+### Apache High Availability
+For an alternative to Nginx, use Apache for high availability.  
+- [Apache High Availability Documentation](https://activemq.apache.org/components/artemis/documentation/latest/ha)  
+- Node-specific Apache configuration files:  
+  - [Node 01 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/01/000-default.conf)  
+  - [Node 02 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/02/000-default.conf)  
+  - [Node 03 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/03/000-default.conf)  
+  - [Node 04 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/04/000-default.conf)  
+
+### Self-Signed Certificate (HTTPS) with OpenSSL for Apache
+Generate a self-signed certificate for Apache:
+```bash
 git clone https://github.com/universalbit-dev/HArmadillium/
 cd HArmadillium/ssl
 sudo mkdir /etc/apache2/ssl
@@ -345,12 +407,14 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ss
 sudo openssl dhparam -out /etc/apache2/ssl/dhparam.pem 2048
 ```
 
-* [ClusterLabs Apache HTTP Server as a Cluster Service](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch06.html)
----
+**Reference:**  
+- [ClusterLabs: Apache HTTP Server as a Cluster Service](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch06.html)  
 
-* ##### Throubleshooter:
-```
-**Error
+### Troubleshooter
+
+#### Common Error:
+```bash
+**Error**
 Warning: Unable to read the known-hosts file: No such file or directory: '/var/lib/pcsd/known-hosts'
 armadillium03: Unable to authenticate to armadillium03 - (HTTP error: 401)...
 armadillium01: Unable to authenticate to armadillium01 - (HTTP error: 401)...
@@ -358,33 +422,40 @@ armadillium04: Unable to authenticate to armadillium04 - (HTTP error: 401)...
 armadillium02: Unable to authenticate to armadillium02 - (HTTP error: 401)...
 ```
 
-* ##### cause: PCSD service not started
-* ##### fix: Start PCSD service
+#### Cause:
+The **PCSD service** is not started.
+
+#### Fix:
+Start the PCSD service on the affected node(s):
 ```bash
-#armadilliun02
+# On armadillium02
 ssh armadillium02@192.168.1.142
 sudo service pcsd start
 sudo service pcsd status
 ```
 
-* ##### PCSD Status:
+---
+
+#### Check PCSD Cluster Status:
 ```bash
 sudo pcs cluster status
 ```
+Example Output:
 ```bash
   * armadillium03: Online
   * armadillium04: Online
   * armadillium02: Online
   * armadillium01: Online
 ```
+
 ---
 
-* ##### Property List TO each node
+#### View Cluster Property List for Each Node:
 ```bash
 sudo pcs property list
 ```
 
-##### Example Working Output: 
+#### Example Output:
 ```bash
 Cluster Properties:
 cluster-infrastructure: corosync
@@ -394,8 +465,10 @@ have-watchdog: false
 no-quorum-policy: ignore
 stonith-enabled: false
 ```
-##### HACluster configured and ready to [host]() something of amazing
+
 ---
+
+### Your HACluster is now configured and ready to host something amazing!
 
 #### Resources:
 * [Clusters_from_Scratch](https://clusterlabs.org/pacemaker/doc/2.1/Clusters_from_Scratch/html/index.html)
