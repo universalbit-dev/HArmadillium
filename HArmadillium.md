@@ -69,8 +69,8 @@ sudo nano /etc/hosts
 
 ---
 
-## [SSH Overview](https://github.com/universalbit-dev/HArmadillium/tree/main/ssh#ssh-connection-overview)
-##### SSH connection to communicate with all nodes
+## SSH
+##### [SSH connection](https://github.com/universalbit-dev/HArmadillium/tree/main/ssh#ssh-connection-overview) to communicate with all nodes
 * [OpenSSH](https://documentation.ubuntu.com/server/how-to/security/openssh-server/index.html) 
 * [Docs](https://www.openssh.com/manual.html)
 * [SSH-Essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys)
