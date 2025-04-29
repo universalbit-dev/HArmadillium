@@ -16,7 +16,7 @@ This file, `HArmadillium.md`, serves as a continuation of the `ha_cluster_setup.
 
 * [Static IP](#StaticIP)
 * [Host setup](#Host)
-* [SSH connections](https://github.com/universalbit-dev/HArmadillium/tree/main/ssh#ssh-connection-overview)
+* [SSH connections](#SSH)
 * [Corosync](#Corosync)
 * [PCMK file](#PCMK)
 * [CRM](#CRM)
@@ -53,35 +53,22 @@ sudo apt install corosync pacemaker fence-agents crmsh pcs* cluster-glue ufw ngi
 
 Getting <strong>Wiki</strong>:
 * [Corosync-PCS-PaceMaker](https://wiki.debian.org/Debian-HA/ClustersFromScratch)
+---
 
 ## StaticIP
 [Setup Static IP](https://www.freecodecamp.org/news/setting-a-static-ip-in-ubuntu-linux-ip-address-tutorial/)
 
-## Host
+---
+
+## [Host]
 * edit host file <strong>TO</strong> each node
 ```bash
 sudo nano /etc/hosts
 ```
-armadillium01 host
-```bash
-127.0.0.1       localhost
-127.0.1.1       armadillium01
-
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-
-192.168.1.142 armadillium02
-192.168.1.143 armadillium03
-192.168.1.144 armadillium04
-```
-## Host Setup
-* ##### [#01](https://github.com/universalbit-dev/HArmadillium/blob/main/host/01.md) -- [#02](https://github.com/universalbit-dev/HArmadillium/blob/main/host/02.md) -- [#03](https://github.com/universalbit-dev/HArmadillium/blob/main/host/03.md) -- [#04](https://github.com/universalbit-dev/HArmadillium/blob/main/host/04.md)
+* [Setup](https://github.com/universalbit-dev/HArmadillium/blob/main/host/readme.md)
 
 ---
+
 ## [SSH Overview](https://github.com/universalbit-dev/HArmadillium/tree/main/ssh#ssh-connection-overview)
 ##### SSH connection to communicate with all nodes
 * [OpenSSH](https://documentation.ubuntu.com/server/how-to/security/openssh-server/index.html) 
