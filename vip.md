@@ -40,7 +40,7 @@ Here’s how you would configure Nginx or Apache using the VIP:
 ```nginx
 server {
     listen 80;
-    server_name example.com;
+    server_name armadillium01;
 
     location / {
         proxy_pass http://192.168.1.140; # The VIP
@@ -49,16 +49,14 @@ server {
 ```
 [HArmadillium Nginx Configuration](https://github.com/universalbit-dev/HArmadillium/tree/main/nginx)
 
-#### **Apache Example**:
+#### **Apache VIP Example**:
 ```apache
 <VirtualHost *:8080>
-    ServerName example.com
+    ServerName armadillium01
     ProxyPass / http://192.168.1.140/
     ProxyPassReverse / http://192.168.1.140/
 </VirtualHost>
 ```
-[HArmadillium Apache Configuration](https://github.com/universalbit-dev/HArmadillium/tree/main/apache)
-
 ---
 
 ### **If Load Balancing Across Nodes is Required**
@@ -75,7 +73,7 @@ upstream backend {
 
 server {
     listen 80;
-    server_name example.com;
+    server_name armadillium01;
 
     location / {
         proxy_pass http://backend;
@@ -83,7 +81,7 @@ server {
 }
 ```
 
-#### **Apache Reverse Proxy Example**:
+#### **Apache Load Balancing Example**:
 ```apache
 <Proxy "balancer://cluster">
     BalancerMember http://192.168.1.141
@@ -93,7 +91,7 @@ server {
 </Proxy>
 
 <VirtualHost *:8080>
-    ServerName example.com
+    ServerName armadillium01
     ProxyPass / balancer://cluster/
     ProxyPassReverse / balancer://cluster/
 </VirtualHost>
