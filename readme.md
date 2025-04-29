@@ -50,12 +50,12 @@ Operative System:
 * [Ubuntu 24.04 LTS](https://ubuntu.com/download/desktop#community)
 
 ---
-* [Nginx](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#webserver) -- [Nginx configuration file](https://github.com/universalbit-dev/HArmadillium/blob/main/nginx/01/default)
+* [Nginx](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#webserver) -- [Nginx configuration file](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#nginx-configuration)
 * [HTTPS](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#self-signed-certificate-https-with-openssl) 
-* [SSH connections](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#ssh)
+* [SSH](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#ssh-connection-to-communicate-with-all-nodes)
 
 ##### Basic Security (If needed,use this: [SELKS](https://github.com/universalbit-dev/SELKS/pkgs/container/arkimeviewer))
-* [UFW](https://manpages.ubuntu.com/manpages/bionic/en/man8/ufw.8.html) -- [UFW Firewall setup](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu)
+* [UFW](https://manpages.ubuntu.com/manpages/bionic/en/man8/ufw.8.html) -- [UFW Firewall setup](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#ufw-firewall-rules-for-each-node)
 * [Haproxy](https://www.haproxy.org/) -- [Haproxy github repository:](https://github.com/haproxy/haproxy/)  -- [Haproxy and Load Balancing Concepts](https://www.digitalocean.com/community/tutorials/an-introduction-to-haproxy-and-load-balancing-concepts)
 * [Fail2ban](https://github.com/fail2ban/fail2ban) -- [Protect WebServer with Fail2ban ](https://www.digitalocean.com/community/tutorials/how-to-protect-an-nginx-server-with-fail2ban-on-ubuntu-22-04)
 * [Haveged](https://wiki.archlinux.org/title/Haveged#) (Haveged inspired algorithm has been included in the Linux kernel )
