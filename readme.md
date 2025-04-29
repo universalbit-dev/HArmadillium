@@ -42,8 +42,8 @@ This script is an excellent tool for beginners who want to quickly set up the fo
 ##### [Introduction-to-High-Availability](https://ubuntu.com/server/docs/introduction-to-high-availability)
 
 ##### HARDWARE: ThinClient examples
-* ThinClient HPT610 : [Specifications](https://support.hp.com/us-en/document/c03235347)
-* ThinClient HPT630 : [Specifications](https://support.hp.com/us-en/document/c05240287) 
+* ThinClient HPT610 : [Specifications](https://support.hp.com/us-en/product/setup-user-guides/hp-t610-flexible-thin-client/5226816)
+* ThinClient HPT630 : [Specifications](https://support.hp.com/us-en/product/details/hp-t630-thin-client/10522151) 
 ---
 
 Operative System:
