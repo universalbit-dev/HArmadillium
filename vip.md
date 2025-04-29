@@ -92,7 +92,7 @@ server {
     BalancerMember http://192.168.1.144
 </Proxy>
 
-<VirtualHost *:80>
+<VirtualHost *:8080>
     ServerName example.com
     ProxyPass / balancer://cluster/
     ProxyPassReverse / balancer://cluster/
