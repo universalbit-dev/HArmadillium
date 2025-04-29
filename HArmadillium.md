@@ -82,18 +82,12 @@ ff02::2 ip6-allrouters
 * ##### [#01](https://github.com/universalbit-dev/HArmadillium/blob/main/host/01.md) -- [#02](https://github.com/universalbit-dev/HArmadillium/blob/main/host/02.md) -- [#03](https://github.com/universalbit-dev/HArmadillium/blob/main/host/03.md) -- [#04](https://github.com/universalbit-dev/HArmadillium/blob/main/host/04.md)
 
 ---
-## SSH
+## [SSH Overview](https://github.com/universalbit-dev/HArmadillium/tree/main/ssh#ssh-connection-overview)
 ##### SSH connection to communicate with all nodes
-[OpenSSH Server](https://ubuntu.com/server/docs/openssh-server) -- [Docs](https://www.openssh.com/manual.html)
-Install required packages to each node and <strong>Check [ubuntu repository](#ubuntu)</strong>
-* <strong>FROM</strong> armadillium01 <strong>TO</strong> armadillium02
-```bash
-ssh armadillium02@192.168.1.142
-sudo apt install corosync pacemaker fence-agents crmsh pcs* cluster-glue ufw nginx haveged heartbeat openssh-server openssh-client
-```
-* <strong>openssh-server:</strong> OpenSSH server application and related support files.
-* <strong>openssh-client:</strong> OpenSSH client applications on your Ubuntu system
-##### -- [#01](https://github.com/universalbit-dev/HArmadillium/blob/main/ssh/01.md) -- [#02](https://github.com/universalbit-dev/HArmadillium/blob/main/ssh/02.md) -- [#03](https://github.com/universalbit-dev/HArmadillium/blob/main/ssh/03.md) -- [#04](https://github.com/universalbit-dev/HArmadillium/blob/main/ssh/04.md)
+* [OpenSSH](https://documentation.ubuntu.com/server/how-to/security/openssh-server/index.html) 
+* [Docs](https://www.openssh.com/manual.html)
+* [SSH-Essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys)
+---
 
 ## UFW
 ## Firewall Rules TO each node
