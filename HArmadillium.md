@@ -349,8 +349,6 @@ sudo apt install openssl nginx git -y
 **Reference:**  
 [OpenSSL WebServer](https://nginx.org/en/docs/http/configuring_https_servers.html)
 
-## [HTTPS]
-
 ### Self-Signed Certificate (HTTPS) with OpenSSL
 Generate a self-signed certificate using OpenSSL:
 ```bash
@@ -365,7 +363,6 @@ sudo openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 
 ## Nginx Configuration
 
-### Default Configuration
 Edit the default Nginx configuration file:
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
@@ -386,17 +383,14 @@ sudo service nginx start
 
 ---
 
-## Alternative Webserver: Apache
+## Alternative Webserver: Apache High Availability
 
-### Apache High Availability
-For an alternative to Nginx, use Apache for high availability.  
-- [Apache High Availability Documentation](https://activemq.apache.org/components/artemis/documentation/latest/ha)  
-- Node-specific Apache configuration files:  
-  - [Node 01 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/01/000-default.conf)  
-  - [Node 02 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/02/000-default.conf)  
-  - [Node 03 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/03/000-default.conf)  
-  - [Node 04 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/04/000-default.conf)  
+For an alternative to Nginx, you can use Apache to set up high availability. Start by installing Apache and the required packages:  
 
+```bash
+sudo apt update
+sudo apt install apache2 libapache2-mod-ssl ssl-cert -y
+```
 ### Self-Signed Certificate (HTTPS) with OpenSSL for Apache
 Generate a self-signed certificate for Apache:
 ```bash
@@ -406,10 +400,26 @@ sudo mkdir /etc/apache2/ssl
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/host.key -out /etc/apache2/ssl/host.cert --config distinguished.cnf
 sudo openssl dhparam -out /etc/apache2/ssl/dhparam.pem 2048
 ```
+Once installed, you can proceed to configure Apache for high availability.  
+
+Refer to the following resources for configuration files:  
+- [Node 01 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/01/000-default.conf)  
+- [Node 02 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/02/000-default.conf)  
+- [Node 03 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/03/000-default.conf)  
+- [Node 04 Configuration](https://github.com/universalbit-dev/HArmadillium/blob/main/apache/04/000-default.conf)  
+
+For more details, visit the [Apache High Availability Documentation](https://activemq.apache.org/components/artemis/documentation/latest/ha).  
+
+Start the Apache2 service:
+```bash
+sudo service apache2 start
+```
+
 
 **Reference:**  
 - [ClusterLabs: Apache HTTP Server as a Cluster Service](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch06.html)  
 
+---
 ### Troubleshooter
 
 #### Common Error:
