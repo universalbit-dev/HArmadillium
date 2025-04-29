@@ -10,7 +10,9 @@
 
 
 ---
-# High Availability Clusters [HArmadillium](https://github.com/universalbit-dev/armadillium/blob/main/HArmadillium.md)
+# High Availability Clusters 
+* [HArmadillium](https://github.com/universalbit-dev/armadillium/blob/main/HArmadillium.md)
+* [HA Cluster Setup](https://github.com/universalbit-dev/HArmadillium/blob/main/ha_cluster_setup.sh)
 
 The `ha_cluster_setup.sh` script is a **beginner-friendly starting point** for setting up a High Availability (HA) cluster. It simplifies and accelerates the installation process by automating the basic steps while skipping detailed configurations for advanced tools like `corosync` and `pcs`. This allows users to quickly install required components and focus on further customization later.
 
