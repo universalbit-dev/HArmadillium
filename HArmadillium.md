@@ -16,7 +16,7 @@ This file, `HArmadillium.md`, serves as a continuation of the `ha_cluster_setup.
 
 * [Static IP](#StaticIP)
 * [Host setup](#Host)
-* [SSH connections](https://github.com/universalbit-dev/HArmadillium/tree/main/ssh#ssh-connection-overview))
+* [SSH connections](https://github.com/universalbit-dev/HArmadillium/tree/main/ssh#ssh-connection-overview)
 * [Corosync](#Corosync)
 * [PCMK file](#PCMK)
 * [CRM](#CRM)
