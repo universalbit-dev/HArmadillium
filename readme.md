@@ -43,15 +43,7 @@ The `ha_cluster_setup.sh` script is a **beginner-friendly starting point** for s
 This script is an excellent tool for beginners who want to quickly set up the foundational components of an HA cluster and explore further configurations at their own pace.
 ##### [Introduction-to-High-Availability](https://ubuntu.com/server/docs/introduction-to-high-availability)
 
-##### HARDWARE: ThinClient examples
-* ThinClient HPT610 
-* ThinClient HPT630 
----
 
-Operative System:
-* [Ubuntu 24.04 LTS](https://ubuntu.com/download/desktop#community)
-
----
 * [Nginx Setup](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#webserver) — [Nginx Configuration Guide](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#nginx-configuration)  
 * [Enable HTTPS with Self-Signed Certificate](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#self-signed-certificate-https-with-openssl)  
 * [Establish SSH Connections](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#ssh-connection-to-communicate-with-all-nodes)  
@@ -66,6 +58,11 @@ Operative System:
 apt install ufw haproxy fail2ban
 systemctl enable ufw haproxy fail2ban
 ```
+
+---
+
+
+
 <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ecosystem_gran_canaria_edited.png" width="auto" />
 
 ### HappyCoding!
