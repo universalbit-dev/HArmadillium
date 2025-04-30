@@ -74,6 +74,7 @@ The HTTPS configuration enables SSL and provides WebSocket proxy settings:
         RequestHeader set X-Forwarded-For %{X-Forwarded-For}s
         RequestHeader set X-NginX-Proxy true
         ProxyPreserveHost On
+        #ProxyPassUpgrade On
     </Location>
 
     # Timeout settings
