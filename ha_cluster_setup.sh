@@ -91,6 +91,7 @@ sudo systemctl start haproxy
 
 # Step 5: Generate SSL Certificates using `HArmadillium/ssl/` folder
 echo "Generating SSL certificates..."
+export DYNAMIC_CN=$(hostname)  # Dynamically set the CN using the server's hostname
 SSL_CONFIG_PATH="HArmadillium/ssl/distinguished.cnf"
 
 # Check if the SSL configuration file exists
