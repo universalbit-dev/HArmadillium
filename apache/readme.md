@@ -24,7 +24,7 @@ Ensure the following Apache modules are enabled:
 
 You can enable these modules using the following command:
 ```bash
-sudo a2enmod ssl proxy proxy_balancer proxy_http proxy_wstunnel headers http2
+sudo a2enmod ssl proxy proxy_balancer proxy_http proxy_wstunnel headers http2 lbmethod_byrequests
 ```
 
 ## Configuration Details
