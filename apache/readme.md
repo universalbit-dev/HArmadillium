@@ -84,5 +84,5 @@ The HTTPS configuration enables SSL and provides WebSocket proxy settings:
 
 ## Notes
 - Replace `armadillium01` with your server's fully qualified domain name (FQDN) or IP address.
-- Ensure [SSL certificates](https://github.com/universalbit-dev/HArmadillium/blob/main/HArmadillium.md#self-signed-certificate-https-with-openssl-apache2) are correctly placed at `/etc/apache2/ssl/`.
+- Ensure [SSL certificates](https://github.com/universalbit-dev/HArmadillium/tree/main/ssl) are correctly placed at `/etc/apache2/ssl/`.
   
