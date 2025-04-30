@@ -18,6 +18,34 @@ cd ~/HArmadillium/ssl
 A self-signed SSL certificate is a certificate that is not signed by a trusted Certificate Authority (CA) but is created and signed by the organization or individual that owns the domain or server. Self-signed certificates are useful for testing purposes or internal use where trust chains aren't necessary.
 
 ---
+#### self-signed certificate (HTTPS) with OpenSSL  Nginx
+
+```bash
+
+#!/bin/bash
+
+# Set the dynamic CN
+export DYNAMIC_CN=$(hostname)  # Use the hostname command or any logic to set the CN dynamically
+
+# Generate the certificate
+openssl req -new -x509 -config distinguished.cnf -keyout /etc/nginx/ssl/host.key -out /etc/nginx/ssl/host.cert -days 365
+echo "Certificate generated with CN: $DYNAMIC_CN"
+```
+
+
+#### self-signed certificate (HTTPS) with OpenSSL  Apache2
+
+```bash
+
+#!/bin/bash
+
+# Set the dynamic CN
+export DYNAMIC_CN=$(hostname)  # Use the hostname command or any logic to set the CN dynamically
+
+# Generate the certificate
+openssl req -new -x509 -config distinguished.cnf -keyout /etc/apache2/ssl/host.key -out /etc/apache2/ssl/host.cert -days 365
+echo "Certificate generated with CN: $DYNAMIC_CN"
+```
 
 Both scripts generate a self-signed SSL certificate dynamically using OpenSSL. The differences lie in the path where the certificate and key are stored, depending on whether you're configuring Nginx or Apache2.
 
@@ -131,33 +159,3 @@ Both scripts generate a self-signed SSL certificate dynamically using OpenSSL. T
 - **Browser Warnings**: Since this is a self-signed certificate, browsers will show a warning indicating the certificate is not trusted. This is expected behavior for self-signed certificates.
 - **Use Cases**: Self-signed certificates are ideal for internal or testing environments but should not be used for public-facing websites.
 - **Expiration**: The certificate is valid for 365 days. Ensure to regenerate it before expiration to avoid service interruptions.
-
-
-#### self-signed certificate (HTTPS) with OpenSSL  Nginx
-
-```bash
-
-#!/bin/bash
-
-# Set the dynamic CN
-export DYNAMIC_CN=$(hostname)  # Use the hostname command or any logic to set the CN dynamically
-
-# Generate the certificate
-openssl req -new -x509 -config distinguished.cnf -keyout /etc/nginx/ssl/host.key -out /etc/nginx/ssl/host.cert -days 365
-echo "Certificate generated with CN: $DYNAMIC_CN"
-```
-
-
-#### self-signed certificate (HTTPS) with OpenSSL  Apache2
-
-```bash
-
-#!/bin/bash
-
-# Set the dynamic CN
-export DYNAMIC_CN=$(hostname)  # Use the hostname command or any logic to set the CN dynamically
-
-# Generate the certificate
-openssl req -new -x509 -config distinguished.cnf -keyout /etc/apache2/ssl/host.key -out /etc/apache2/ssl/host.cert -days 365
-echo "Certificate generated with CN: $DYNAMIC_CN"
-```
