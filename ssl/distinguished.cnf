@@ -19,7 +19,7 @@ ST                     = Rome
 L                      = Rome
 O                      = UniversalBit
 OU                     = universalbit
-CN                     = unbt
+CN                     = ${ENV::DYNAMIC_CN}
 
 # certificate authority configuration
 [ ca_ext ]
