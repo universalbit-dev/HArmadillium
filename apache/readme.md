@@ -21,6 +21,7 @@ Ensure the following Apache modules are enabled:
 - `mod_proxy_wstunnel`
 - `mod_headers`
 - `mod_http2`
+- `mod_lbmethod_byrequests`
 
 You can enable these modules using the following command:
 ```bash
