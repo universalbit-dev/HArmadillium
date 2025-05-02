@@ -167,6 +167,14 @@ sudo systemctl restart apache2
 
 # Step 8: Configure and start Fail2Ban
 echo "Configuring Fail2Ban..."
+
+# Ensure allowipv6 setting is uncommented in fail2ban.conf
+fail2ban_main_config="/etc/fail2ban/fail2ban.conf"
+if grep -q "^#allowipv6 = auto" "$fail2ban_main_config"; then
+    echo "Uncommenting allowipv6 = auto in Fail2Ban main configuration..."
+    sudo sed -i 's/^#allowipv6 = auto/allowipv6 = auto/' "$fail2ban_main_config"
+fi
+
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
 
