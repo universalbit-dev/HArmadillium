@@ -119,7 +119,7 @@ sudo rm /etc/nginx/sites-enabled/default
 cat <<EOF | sudo tee /etc/nginx/sites-enabled/default
 server {
     listen 80;
-    server_name localhost;
+    server_name $static_ip;
 
     # Redirect all HTTP traffic to HTTPS
     return 301 https://\$host\$request_uri;
@@ -127,7 +127,7 @@ server {
 
 server {
     listen 443 ssl;
-    server_name localhost;
+    server_name $static_ip;
 
     ssl_certificate /etc/nginx/ssl/host.cert;
     ssl_certificate_key /etc/nginx/ssl/host.key;
@@ -150,10 +150,10 @@ EOF
 cat <<EOF | sudo tee /etc/apache2/sites-enabled/000-default.conf
 <VirtualHost *:8080>
     # Redirect all HTTP traffic to HTTPS
-    Redirect permanent / https://localhost:4433/
+    Redirect permanent / https://$static_ip:4433/
 </VirtualHost>
 
-<VirtualHost *:4433>
+<VirtualHost $static_ip:4433>
     SSLEngine on
     SSLCertificateFile /etc/apache2/ssl/host.cert
     SSLCertificateKeyFile /etc/apache2/ssl/host.key
