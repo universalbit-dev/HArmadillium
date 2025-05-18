@@ -7,7 +7,10 @@ Help us grow and continue innovating!
 ---
 
 #### Development need a digital working environment for develop with or without limit.
-<img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/armadillidium.png" width="5%" />
+<p align="center">
+  <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/armadillidium.png" width="200" />
+</p>
+
 
 
 ---
