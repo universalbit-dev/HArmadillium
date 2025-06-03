@@ -8,7 +8,7 @@ Help us grow and continue innovating!
 
 #### Unlimited Digital Development Environment for High Availability Clusters
 <p align="center">
-  <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/armadillidium.png" width="200" />
+  <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/_.armadillidium.png" width="200" />
 </p>
 
 
