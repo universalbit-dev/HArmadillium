@@ -10,7 +10,10 @@ jobs:
   setup-ha-cluster:
     runs-on: ubuntu-latest
     env:
-      USE_DHCP: true
+      STATIC_IP: 192.168.1.100
+      SUBNET_MASK: 255.255.255.0
+      GATEWAY: 192.168.1.1
+      DNS_SERVERS: 8.8.8.8,8.8.4.4
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,7 +21,10 @@ jobs:
       - name: Make setup script executable
         run: chmod +x ha_cluster_setup.sh
 
-      - name: Run HA Cluster Setup Script (DHCP mode)
+      - name: Run HA Cluster Setup Script
         run: |
-          export USE_DHCP="${USE_DHCP}"
+          export STATIC_IP="${STATIC_IP}"
+          export SUBNET_MASK="${SUBNET_MASK}"
+          export GATEWAY="${GATEWAY}"
+          export DNS_SERVERS="${DNS_SERVERS}"
           sudo ./ha_cluster_setup.sh
