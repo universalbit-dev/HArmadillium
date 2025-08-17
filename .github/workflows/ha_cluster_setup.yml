@@ -1,0 +1,19 @@
+name: HA Cluster Setup
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup-ha-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Make setup script executable
+        run: chmod +x ha_cluster_setup.sh
+
+      - name: Run HA Cluster Setup Script
+        run: sudo ./ha_cluster_setup.sh
