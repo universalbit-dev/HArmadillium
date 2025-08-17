@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   setup-ha-cluster:
     runs-on: ubuntu-latest
+    env:
+      USE_DHCP: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -15,5 +18,7 @@ jobs:
       - name: Make setup script executable
         run: chmod +x ha_cluster_setup.sh
 
-      - name: Run HA Cluster Setup Script
-        run: sudo ./ha_cluster_setup.sh
+      - name: Run HA Cluster Setup Script (DHCP mode)
+        run: |
+          export USE_DHCP="${USE_DHCP}"
+          sudo ./ha_cluster_setup.sh
