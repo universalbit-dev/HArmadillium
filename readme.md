@@ -34,13 +34,11 @@ flowchart LR
     TC4 -- "Cluster Communication" --- TC1
 ```
 
-<p align="center">
-  <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ai_armadillidium.png" width="200" />
+---
+<p>
+  <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ai_armadillidium.png" width="100" />
 </p>
 
-
-
----
 # High Availability Clusters 
 * [HArmadillium](https://github.com/universalbit-dev/armadillium/blob/main/HArmadillium.md)
 * [HA Cluster Setup](https://github.com/universalbit-dev/HArmadillium/blob/main/ha_cluster_setup.sh)
