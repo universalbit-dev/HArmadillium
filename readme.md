@@ -7,6 +7,33 @@ Help us grow and continue innovating!
 ---
 
 #### Unlimited Digital Development Environment for High Availability Clusters
+
+## 🖧 High Availability Thin Client Cluster – Physical & Logical Schema
+
+```mermaid
+flowchart LR
+    subgraph "Thin Client Cluster"
+        TC1["💻 Thin Client 1\n🏙️ CityGenerator"]
+        TC2["💻 Thin Client 2\n🛠️ CNCjs"]
+        TC3["💻 Thin Client 3\n📈 gekko-m4-globular-cluster"]
+        TC4["💻 Thin Client 4\n🖥️ (custom/expansion)"]
+    end
+
+    TC1 -- "Cat7 Ethernet" --> Switch["🔀 Gigabit Switch"]
+    TC2 -- "Cat7 Ethernet" --> Switch
+    TC3 -- "Cat7 Ethernet" --> Switch
+    TC4 -- "Cat7 Ethernet" --> Switch
+
+    Switch -- "Cat7 Ethernet" --> Router["🌐 ISP Router"]
+    Router -- "WAN/ISP" --> Internet["🌍 Internet"]
+
+    %% Optional: Logical connections between application nodes
+    TC1 -- "Cluster Communication" --- TC2
+    TC2 -- "Cluster Communication" --- TC3
+    TC3 -- "Cluster Communication" --- TC4
+    TC4 -- "Cluster Communication" --- TC1
+```
+
 <p align="center">
   <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ai_armadillidium.png" width="200" />
 </p>
@@ -65,8 +92,5 @@ systemctl enable ufw haproxy fail2ban
 
 ---
 
-
-
-<img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ecosystem_gran_canaria_edited.png" width="auto" />
 
 ### HappyCoding!
