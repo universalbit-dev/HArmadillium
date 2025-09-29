@@ -8,30 +8,60 @@ Help us grow and continue innovating!
 
 #### Unlimited Digital Development Environment for High Availability Clusters
 
-## 🖧 High Availability Thin Client Cluster – Physical & Logical Schema
-
 ```mermaid
-flowchart LR
-    subgraph "Thin Client Cluster"
-        TC1["💻 Thin Client 1\n🏙️ CityGenerator"]
-        TC2["💻 Thin Client 2\n🛠️ CNCjs"]
-        TC3["💻 Thin Client 3\n📈 gekko-m4-globular-cluster"]
-        TC4["💻 Thin Client 4\n🖥️ (custom/expansion)"]
+flowchart TD
+    subgraph "HA Cluster Setup (ha_cluster_setup.sh)"
+        InstallTools["Install Critical HA Tools\n(corosync, pacemaker, pcs)"]
+        InstallSupport["Install Supporting Tools\n(ufw, haproxy, fail2ban, nginx, apache2)"]
+        StaticIP["Static IP Configuration\n(netplan guidance)"]
+        SSLCert["SSL Certificate Setup\n(Self-signed for Nginx/Apache2)"]
+        DefaultServices["Default Service Setup\n(Start & enable HAProxy, Fail2Ban, nginx, apache2)"]
+        ServiceStatus["Service Status Check\n(Display status of critical services)"]
+        ManualConfig["Manual Advanced Config\n(Corosync/PCS setup left for user)"]
     end
 
-    TC1 -- "Cat7 Ethernet" --> Switch["🔀 Gigabit Switch"]
-    TC2 -- "Cat7 Ethernet" --> Switch
-    TC3 -- "Cat7 Ethernet" --> Switch
-    TC4 -- "Cat7 Ethernet" --> Switch
+    InstallTools --> InstallSupport
+    InstallSupport --> StaticIP
+    StaticIP --> SSLCert
+    SSLCert --> DefaultServices
+    DefaultServices --> ServiceStatus
+    ServiceStatus --> ManualConfig
 
-    Switch -- "Cat7 Ethernet" --> Router["🌐 ISP Router"]
-    Router -- "WAN/ISP" --> Internet["🌍 Internet"]
+    subgraph "Basic Security"
+        UFW["UFW Firewall"]
+        Haproxy["HAProxy\n(Load Balancer)"]
+        Fail2ban["Fail2Ban\n(Intrusion Prevention)"]
+        Haveged["Haveged\n(Randomness Generator)"]
+    end
 
-    %% Optional: Logical connections between application nodes
-    TC1 -- "Cluster Communication" --- TC2
-    TC2 -- "Cluster Communication" --- TC3
-    TC3 -- "Cluster Communication" --- TC4
-    TC4 -- "Cluster Communication" --- TC1
+    DefaultServices --> UFW
+    DefaultServices --> Haproxy
+    DefaultServices --> Fail2ban
+    DefaultServices --> Haveged
+
+    subgraph "Web & SSH Setup"
+        NginxSetup["Nginx Setup & Config Guide"]
+        HTTPSSetup["Enable HTTPS\n(Self-signed Cert.)"]
+        SSHConn["Establish SSH Connections"]
+    end
+
+    DefaultServices --> NginxSetup
+    DefaultServices --> HTTPSSetup
+    DefaultServices --> SSHConn
+
+    ManualConfig -.-> |User customizes| InstallTools
+    ManualConfig -.-> |User customizes| InstallSupport
+    ManualConfig -.-> |User customizes| StaticIP
+    ManualConfig -.-> |User customizes| SSLCert
+    ManualConfig -.-> |User customizes| DefaultServices
+
+    %% Legend
+    classDef core fill:#f5f5dc,stroke:#333,stroke-width:2px;
+    class InstallTools,InstallSupport,StaticIP,SSLCert,DefaultServices,ServiceStatus,ManualConfig core;
+    classDef security fill:#e0f7fa,stroke:#333,stroke-width:2px;
+    class UFW,Haproxy,Fail2ban,Haveged security;
+    classDef webssh fill:#e6ee9c,stroke:#333,stroke-width:2px;
+    class NginxSetup,HTTPSSetup,SSHConn webssh;
 ```
 
 ---
