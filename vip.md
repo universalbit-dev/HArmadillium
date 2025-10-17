@@ -1,4 +1,4 @@
-##### Configuring an upstream block in Nginx or Apache with 4 nodes instead of a single Virtual IP (VIP) can work in some scenarios, but it is not an ideal configuration for a High Availability (HA) cluster for the following reasons:
+##### Configuring an upstream block in Nginx or Apache with 4 nodes instead of a single Virtual IP (VIP) can work in some scenarios, but it is not an ideal configuration for a High Availability (HA) cluster.
 
 ### **Why Using a Single VIP is Preferred**
 1. **Load Balancing with a VIP**:
@@ -10,9 +10,47 @@
    - If one or more nodes are down, requests might still be sent to those nodes unless additional health checks are configured explicitly.
 
 3. **Failover Management**:
-   - A single VIP allows the cluster to handle failover seamlessly. Without a VIP, you rely on the webserver's upstream health-checking mechanism, which may not provide the same level of reliability as the cluster manager.
+   - A single VIP allows the cluster to handle failover seamlessly. Without a VIP, you rely on the webserver's upstream health-checking mechanism, which may not provide the same level of reliability and coordination as dedicated clustering software.
 
 ---
+### **Architecture Comparison**
+
+```mermaid
+flowchart TD
+    subgraph HA_Cluster
+        direction TB
+        Client[Client]
+        VIP["VIP (192.168.1.140)\nManaged by Pacemaker"]
+        Node1["Node 1\n192.168.1.141"]
+        Node2["Node 2\n192.168.1.142"]
+        Node3["Node 3\n192.168.1.143"]
+        Node4["Node 4\n192.168.1.144"]
+        Client --> VIP
+        VIP --> Node1
+        VIP -.-> Node2
+        VIP -.-> Node3
+        VIP -.-> Node4
+        note1["Active node receives traffic via VIP,\nfailover handled by clustering software"]
+        VIP --- note1
+    end
+
+    subgraph Load_Balancer
+        direction TB
+        LBClient[Client]
+        LB["Nginx/Apache Load Balancer"]
+        LBNode1["Node 1\n192.168.1.141"]
+        LBNode2["Node 2\n192.168.1.142"]
+        LBNode3["Node 3\n192.168.1.143"]
+        LBNode4["Node 4\n192.168.1.144"]
+        LBClient --> LB
+        LB --> LBNode1
+        LB --> LBNode2
+        LB --> LBNode3
+        LB --> LBNode4
+        note2["Traffic distributed to all nodes\nRequires active health checks"]
+        LB --- note2
+    end
+```
 
 ### **Potential Issues with Using 4 Nodes in Upstream**
 1. **Uncoordinated Traffic**:
@@ -22,7 +60,7 @@
    - Configuring upstreams for all 4 nodes can make the setup more complex and harder to manage, especially when changes or updates are needed.
 
 3. **Redundancy**:
-   - If all nodes are configured in the upstream block, and the service is active only on one node at a time (as is common in HA setups), the other nodes might not serve any traffic unless explicitly required.
+   - If all nodes are configured in the upstream block, and the service is active only on one node at a time (as is common in HA setups), the other nodes might not serve any traffic unless explicitly synchronized.
 
 ---
 
@@ -43,7 +81,9 @@ server {
     server_name armadillium01;
 
     location / {
-        proxy_pass http://192.168.1.140; # The VIP
+        proxy_pass https://192.168.1.140; # The VIP (HTTPS)
+        proxy_set_header Host $host;
+        proxy_ssl_server_name on;
     }
 }
 ```
@@ -53,10 +93,12 @@ server {
 ```apache
 <VirtualHost *:8080>
     ServerName armadillium01
-    ProxyPass / http://192.168.1.140/
-    ProxyPassReverse / http://192.168.1.140/
+    ProxyPass / https://192.168.1.140/
+    ProxyPassReverse / https://192.168.1.140/
+    SSLProxyEngine on
 </VirtualHost>
 ```
+
 ---
 
 ### **If Load Balancing Across Nodes is Required**
@@ -76,7 +118,9 @@ server {
     server_name armadillium01;
 
     location / {
-        proxy_pass http://backend;
+        proxy_pass https://backend;
+        proxy_set_header Host $host;
+        proxy_ssl_server_name on;
     }
 }
 ```
@@ -84,22 +128,22 @@ server {
 #### **Apache Load Balancing Example**:
 ```apache
 <Proxy "balancer://cluster">
-    BalancerMember http://192.168.1.141
-    BalancerMember http://192.168.1.142
-    BalancerMember http://192.168.1.143
-    BalancerMember http://192.168.1.144
+    BalancerMember https://192.168.1.141
+    BalancerMember https://192.168.1.142
+    BalancerMember https://192.168.1.143
+    BalancerMember https://192.168.1.144
 </Proxy>
 
 <VirtualHost *:8080>
     ServerName armadillium01
     ProxyPass / balancer://cluster/
     ProxyPassReverse / balancer://cluster/
+    SSLProxyEngine on
 </VirtualHost>
 ```
 
 - **Important**: This will distribute traffic across all nodes, and it assumes all nodes are active and synchronized.
-
 ---
 
 ### **Conclusion**
-If your intention is to implement a High Availability (HA) cluster, using a single VIP (192.168.1.140) is the correct approach. Configuring upstreams with 4 nodes may lead to errors or inconsistencies unless you're implementing load balancing across actively synchronized nodes.
+If your intention is to implement a High Availability (HA) cluster, using a single VIP (192.168.1.140) is the correct approach. Configuring upstreams with 4 nodes may lead to errors or inconsistencies unless all nodes are fully synchronized and health checks are properly set up.
