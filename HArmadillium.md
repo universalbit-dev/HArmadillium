@@ -1,14 +1,102 @@
 [![Hyperledger](https://img.shields.io/badge/hyperledger-2F3134?style=for-the-badge&logo=hyperledger&logoColor=white)](https://www.lfdecentralizedtrust.org/)
 ![Debian](https://img.shields.io/badge/Debian-D70A53?style=for-the-badge&logo=debian&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
-##### [Support UniversalBit Project](https://github.com/universalbit-dev/universalbit-dev/tree/main/support) -- [Disambiguation](https://en.wikipedia.org/wiki/Wikipedia:Disambiguation) -- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/html_node/index.html) -- [Join Mastodon](https://mastodon.social/invite/wTHp2hSD) -- [Website](https://www.universalbit.it/) -- [Content Delivery Network](https://www.universalbitcdn.it/)
+##### [Support UniversalBit Project](https://github.com/universalbit-dev/universalbit-dev/tree/main/support) -- [Disambiguation](https://en.wikipedia.org/wiki/Wikipedia:Disambiguation) --
 
 ---
+
+## 📊 High Availability Cluster Setup Flowchart
+
+```mermaid
+flowchart TD
+    A[High Availability Cluster Setup Guide]:::main
+
+    subgraph Prerequisites
+        direction TB
+        A1[Required Packages: python3, corosync, pacemaker, etc.]
+        A2[Static IP for each node]
+        A3[Edit /etc/hosts on each node]
+        A4[UFW Firewall Rules]
+        A5[Enable SSH/OpenSSH]
+    end
+
+    subgraph Corosync_Setup["Corosync"]
+        direction TB
+        B1[Edit /etc/corosync/corosync.conf]
+        B2[Generate corosync-keygen on armadillium01]
+        B3[Copy authkey to other nodes via scp]
+        B4[Move authkey to /etc/corosync on all nodes]
+        B5[Set correct permissions]
+        B6[Start corosync service]
+    end
+
+    subgraph Pacemaker_Setup["Pacemaker & PCMK"]
+        direction TB
+        C1[Install pacemaker]
+        C2[Create /etc/corosync/service.d/pcmk file]
+        C3[Add pacemaker service config to pcmk]
+        C4[Run update-rc.d pacemaker defaults]
+    end
+
+    subgraph PCS_Setup["PCS"]
+        direction TB
+        D1[Start pcsd service]
+        D2[Set hacluster password]
+        D3[Localhost pcs authentication]
+        D4[Authorize all cluster nodes]
+        D5[Disable stonith]
+        D6[Set no-quorum-policy ignore]
+        D7[Install resource-agents-extra]
+        D8[Create nginx webserver resource]
+        D9[Create virtual_ip resource]
+        D10[Add colocation and order constraints]
+        D11[Start and enable cluster on all nodes]
+    end
+
+    subgraph Web_Server["Web Server Setup"]
+        direction TB
+        E1[Nginx: install and configure reverse proxy]
+        E2[Create self-signed certificate with OpenSSL]
+        E3[Edit nginx site config]
+        E4[Start nginx service]
+        E5[Alternative: Apache install, ssl, config, start]
+    end
+
+    subgraph VIP["Virtual IP (VIP)"]
+        direction TB
+        F1[Setup single VIP ]
+        F2[Configure VIP resource in PCS]
+    end
+
+    subgraph Troubleshooting
+        direction TB
+        G1[Error: Unable to authenticate/known-hosts]
+        G2[Fix: start pcsd service]
+        G3[Check pcs cluster status]
+        G4[View cluster property list]
+    end
+
+    %% Relationships
+    A --> Prerequisites
+    Prerequisites --> Corosync_Setup
+    Corosync_Setup --> Pacemaker_Setup
+    Pacemaker_Setup --> PCS_Setup
+    PCS_Setup --> Web_Server
+    PCS_Setup --> VIP
+    Web_Server --> VIP
+    PCS_Setup --> Troubleshooting
+    Troubleshooting --> G3
+    Troubleshooting --> G4
+
+    classDef main fill:#e2e2e2,stroke:#333,stroke-width:2px;
+```
+
+---
+
 * [ThinClient] Setup:[Armadillium](https://github.com/universalbit-dev/armadillium)
 <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ecosystem_gran_canaria_edited.png" width="auto" />
 
 * ## [What is High Availability?](https://www.digitalocean.com/community/tutorials/what-is-high-availability)
-
 
 **Required Packages**: Lists necessary software like `python3`, `corosync`, `pacemaker`, `fence-agents`, `crmsh`, `pcs`, `nginx`, and more.
 
@@ -67,10 +155,9 @@ sudo nano /etc/hosts
 
 **Note:** Ensure that the host file is properly edited and configured on every node.
 
-
 ### UFW Firewall Rules for Each Node
 
-The Uncomplicated Firewall (UFW) is a user-friendly front-end for managing iptables, simplifying the process of configuring a Netfilter firewall. It provides a command-line interface with syntax inspired by OpenBSD's Packet Filter, making it an excellent choice for a host-based firewall.
+The Uncomplicated Firewall (UFW) is a user-friendly front-end for managing iptables, simplifying the process of configuring a Netfilter firewall. It provides a command-line interface with syntax inspi[...]
 
 **Commands for Configuration:**
 ```bash
@@ -87,7 +174,7 @@ Ensure that these firewall rules are applied to each node to maintain proper net
 ### SSH Connection to Communicate with All Nodes
 
 **OpenSSH**  
-Ensure that each node has SSH enabled to allow secure communication between nodes. OpenSSH is a widely-used tool for managing secure shell (SSH) connections, providing encryption for data transfer and remote command execution.
+Ensure that each node has SSH enabled to allow secure communication between nodes. OpenSSH is a widely-used tool for managing secure shell (SSH) connections, providing encryption for data transfer and[...]
 
 **References:**
 - [OpenSSH Documentation](https://www.openssh.com/)
@@ -196,7 +283,7 @@ sudo chmod 400 /etc/corosync/authkey
 
 ## PCS: Pacemaker Configuration System  
 
-PCS simplifies the management of Pacemaker-based clusters, allowing users to easily view, modify, and create clusters. It also includes `pcsd`, which acts as both a graphical user interface (GUI) and a remote server for managing PCS.
+PCS simplifies the management of Pacemaker-based clusters, allowing users to easily view, modify, and create clusters. It also includes `pcsd`, which acts as both a graphical user interface (GUI) and [...]
 
 ### Start the PCS Service
 ```bash
@@ -415,18 +502,16 @@ Start the Apache2 service:
 sudo service apache2 start
 ```
 
-
 **Reference:**  
 - [ClusterLabs: Apache HTTP Server as a Cluster Service](https://clusterlabs.org/pacemaker/doc/deprecated/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch06.html)  
 
 ---
 
-
 ### Virtual IP (VIP) Configuration for High Availability
 
-To ensure optimal High Availability (HA) performance, it is highly recommended to use a **single Virtual IP (VIP)** for your web server configuration. A VIP simplifies failover management by directing traffic to the active node, which is managed by clustering software like Pacemaker.
+To ensure optimal High Availability (HA) performance, it is highly recommended to use a **single Virtual IP (VIP)** for your web server configuration. A VIP simplifies failover management by directing[...]
 
-For advanced configurations, including load balancing across multiple nodes, ensure proper health checks and synchronization of all nodes. Full details are available in the [VIP Configuration Guide](https://github.com/universalbit-dev/HArmadillium/blob/main/vip.md).
+For advanced configurations, including load balancing across multiple nodes, ensure proper health checks and synchronization of all nodes. Full details are available in the [VIP Configuration Guide](h[...]
 
 ---
 
