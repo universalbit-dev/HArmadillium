@@ -1,7 +1,46 @@
 # Nginx Webserver in HArmadillium Cluster
 
 ### **Introduction**
-The Nginx webserver plays a critical role in the HArmadillium High Availability (HA) cluster as the primary webserver resource. It serves as the endpoint for handling HTTP and HTTPS traffic, ensuring the seamless delivery of web content and applications hosted within the cluster. To provide reliability and fault tolerance, the Nginx service is managed as a cluster resource, with a **virtual IP** (VIP) enabling automatic failover between nodes.
+The Nginx webserver plays a critical role in the HArmadillium High Availability (HA) cluster as the primary webserver resource. It serves as the endpoint for handling HTTP and HTTPS traffic, ensuring high availability and fault tolerance for web applications.
+
+---
+
+### **Cluster Architecture **
+
+```mermaid
+flowchart TD
+    subgraph Cluster Nodes
+        A01[armadillium01]
+        A02[armadillium02]
+        A03[armadillium03]
+        A04[armadillium04]
+    end
+
+    VIP[(Virtual IP<br>192.168.1.140)]
+    Client[[Client Devices]]
+    Nginx01[Nginx Service]
+    Nginx02[Nginx Service]
+    Nginx03[Nginx Service]
+    Nginx04[Nginx Service]
+
+    Client --> VIP
+    VIP -- Routed to Active Node --> A01
+    VIP -. failover .-> A02
+    VIP -. failover .-> A03
+    VIP -. failover .-> A04
+
+    A01 --> Nginx01
+    A02 --> Nginx02
+    A03 --> Nginx03
+    A04 --> Nginx04
+
+    Nginx01 -. managed by cluster .-> VIP
+    Nginx02 -. managed by cluster .-> VIP
+    Nginx03 -. managed by cluster .-> VIP
+    Nginx04 -. managed by cluster .-> VIP
+```
+
+*Diagram: The client communicates with the Virtual IP, which is dynamically assigned to one of the cluster nodes. If the active node fails, the VIP and Nginx service migrate to another healthy node, ensuring continuous service.*
 
 ---
 
@@ -11,7 +50,7 @@ The Nginx webserver plays a critical role in the HArmadillium High Availability 
    - It ensures the availability of web services by automatically restarting or relocating the service in case of a node failure.
 
 2. **Virtual IP**:
-   - A virtual IP ([VIP](https://github.com/universalbit-dev/HArmadillium/blob/main/vip.md)) is assigned to the Nginx resource, allowing clients to access the webserver without depending on specific node IP addresses.
+   - A virtual IP ([VIP](https://github.com/universalbit-dev/HArmadillium/blob/main/vip.md)) is assigned to the Nginx resource, allowing clients to access the webserver without depending on specific nodes.
    - The VIP ensures that requests are routed to the active node hosting the Nginx service.
 
 3. **High Availability**:
@@ -96,7 +135,7 @@ The VIP ensures that clients can always access the webserver, regardless of whic
 ---
 
 ### **Conclusion**
-By configuring Nginx as a webserver resource with a virtual IP, HArmadillium ensures high availability and fault tolerance for web applications. This setup guarantees uninterrupted service, even in the event of node failures, making it an essential component of the HArmadillium HA cluster.
+By configuring Nginx as a webserver resource with a virtual IP, HArmadillium ensures high availability and fault tolerance for web applications. This setup guarantees uninterrupted service, even in the event of node failure.
 
 For additional details, consult the main repository documentation or the [Pacemaker](https://clusterlabs.org/pacemaker/doc/) and [Nginx](https://nginx.org/en/docs/) official guides.
 
