@@ -1,7 +1,7 @@
 ### Hostname and `/etc/hosts` in Ubuntu
 
 #### **What is a Hostname?**
-A **hostname** is a human-readable label assigned to a device on a network. It uniquely identifies a machine and allows devices to communicate with each other using names instead of IP addresses. In a High Availability (HA) cluster like **HArmadillium**, hostnames simplify configuration and communication between the nodes.
+A **hostname** is a human-readable label assigned to a device on a network. It uniquely identifies a machine and allows devices to communicate with each other using names instead of IP addresses. In a cluster, hostnames make it easier to reference and manage each node.
 
 For example, the hostnames in the HArmadillium cluster are:
 - `armadillium01`
@@ -14,7 +14,7 @@ These hostnames correspond to individual nodes in the cluster.
 ---
 
 #### **What is `/etc/hosts`?**
-The `/etc/hosts` file is a local configuration file used to map hostnames to IP addresses. It provides a static way to resolve hostnames without relying on an external DNS server. This is especially useful during initial setups or in environments where DNS is unavailable.
+The `/etc/hosts` file is a local configuration file used to map hostnames to IP addresses. It provides a static way to resolve hostnames without relying on an external DNS server. This is especially useful in small networks or clusters where DNS may not be available or desired.
 
 ---
 
@@ -26,7 +26,7 @@ The `/etc/hosts` file is a local configuration file used to map hostnames to IP 
 ---
 
 #### **Configuring `/etc/hosts` for HArmadillium**
-To ensure seamless communication in the HArmadillium cluster, you need to edit the `/etc/hosts` file on each node to map the hostnames to their respective IP addresses. Below is the configuration example for HArmadillium:
+To ensure seamless communication in the HArmadillium cluster, you need to edit the `/etc/hosts` file on each node to map the hostnames to their respective IP addresses. Below is the configuration example:
 
 ```plaintext
 192.168.1.141 armadillium01
@@ -36,6 +36,84 @@ To ensure seamless communication in the HArmadillium cluster, you need to edit t
 ```
 
 This ensures that each node can be referenced by its hostname, simplifying cluster management.
+
+---
+
+#### **Cluster Topology: Visual Schema**
+
+This illustrates how each node is connected within the cluster and how hostnames relate to their IP addresses:
+
+```mermaid
+flowchart TD
+  subgraph Cluster_Network
+    direction LR
+
+    subgraph Master_Node
+      M1["armadillium01<br>192.168.1.141"]
+    end
+
+    subgraph Worker_Nodes
+      W2["armadillium02<br>192.168.1.142"]
+      W3["armadillium03<br>192.168.1.143"]
+      W4["armadillium04<br>192.168.1.144"]
+    end
+
+    subgraph Shared_Storage
+      FS["NFS Server<br>192.168.1.200"]
+    end
+
+    subgraph Network_Switch
+      S1["Switch"]
+    end
+
+    %% Network interfaces for each node (eth0, eth1)
+    M1_eth0["eth0<br>192.168.1.141"]
+    M1_eth1["eth1<br>10.0.0.1"]
+    W2_eth0["eth0<br>192.168.1.142"]
+    W2_eth1["eth1<br>10.0.0.2"]
+    W3_eth0["eth0<br>192.168.1.143"]
+    W3_eth1["eth1<br>10.0.0.3"]
+    W4_eth0["eth0<br>192.168.1.144"]
+    W4_eth1["eth1<br>10.0.0.4"]
+
+    %% Connections to switch
+    M1_eth0 --- S1
+    M1_eth1 --- S1
+    W2_eth0 --- S1
+    W2_eth1 --- S1
+    W3_eth0 --- S1
+    W3_eth1 --- S1
+    W4_eth0 --- S1
+    W4_eth1 --- S1
+
+    %% Nodes to their interfaces
+    M1 --> M1_eth0
+    M1 --> M1_eth1
+    W2 --> W2_eth0
+    W2 --> W2_eth1
+    W3 --> W3_eth0
+    W3 --> W3_eth1
+    W4 --> W4_eth0
+    W4 --> W4_eth1
+
+    %% Shared storage connections
+    FS --- S1
+
+    %% Cluster communication (logical links)
+    M1 <==> W2
+    M1 <==> W3
+    M1 <==> W4
+    W2 <==> W3
+    W2 <==> W4
+    W3 <==> W4
+
+    %% External network
+    subgraph External
+      Internet["Internet"]
+    end
+    S1 --- Internet
+  end
+```
 
 ---
 
