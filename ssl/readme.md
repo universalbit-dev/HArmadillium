@@ -28,7 +28,7 @@ A self-signed SSL certificate is a certificate that is not signed by a trusted C
 export DYNAMIC_CN=$(hostname)  # Use the hostname command or any logic to set the CN dynamically
 
 # Generate the certificate
-openssl req -new -x509 -config distinguished.cnf -keyout /etc/nginx/ssl/host.key -out /etc/nginx/ssl/host.cert -days 365
+sudo openssl req -new -x509 -config distinguished.cnf -keyout /etc/nginx/ssl/host.key -out /etc/nginx/ssl/host.cert -days 365
 echo "Certificate generated with CN: $DYNAMIC_CN"
 ```
 
@@ -43,7 +43,7 @@ echo "Certificate generated with CN: $DYNAMIC_CN"
 export DYNAMIC_CN=$(hostname)  # Use the hostname command or any logic to set the CN dynamically
 
 # Generate the certificate
-openssl req -new -x509 -config distinguished.cnf -keyout /etc/apache2/ssl/host.key -out /etc/apache2/ssl/host.cert -days 365
+sudo openssl req -new -x509 -config distinguished.cnf -keyout /etc/apache2/ssl/host.key -out /etc/apache2/ssl/host.cert -days 365
 echo "Certificate generated with CN: $DYNAMIC_CN"
 ```
 
