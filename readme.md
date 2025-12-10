@@ -66,7 +66,7 @@ flowchart TD
 
 ---
 <p>
-  <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ai_armadillidium.png" width="100" />
+  <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ThinClients.png" />
 </p>
 
 # High Availability Clusters 
