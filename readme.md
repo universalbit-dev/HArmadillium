@@ -7,6 +7,7 @@ Help us grow and continue innovating!
 ---
 
 #### Unlimited Digital Development Environment for High Availability Clusters
+<p align="center"> <img src="docs/assets/images/Bitto_white_background.png" alt="Bitto mascotte" width="200" /> </p>
 
 ```mermaid
 flowchart TD
