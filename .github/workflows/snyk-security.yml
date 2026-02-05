@@ -1,9 +1,12 @@
-name: Snyk Security Scan (CLI)
+name: Snyk Security Scan
 
 on:
   push:
     branches: [ main, master ]
   pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 2 * * *'
   workflow_dispatch:
 
 jobs:
@@ -11,28 +14,40 @@ jobs:
     runs-on: ubuntu-latest
     environment: snyk
     
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies in workers
+        working-directory: ./workers
+        run: npm install
+      
+      - name: Run Snyk test
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --all-projects --severity-threshold=medium
+      
       - name: Install Snyk CLI
-        run: |
-          curl -L https://static.snyk.io/cli/latest/snyk-linux -o snyk
-          chmod +x snyk
-          sudo mv snyk /usr/local/bin/
+        if: github.event_name == 'push'
+        run: npm install -g snyk
       
       - name: Authenticate Snyk
+        if: github.event_name == 'push'
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
       
-      - name: Scan for IaC vulnerabilities
-        run: snyk iac test --report || true
-      
-      - name: Scan configuration files
-        run: |
-          echo "Scanning shell scripts and config files..."
-          # Snyk IaC can scan Kubernetes, Terraform, CloudFormation, etc.
-          snyk iac test . --severity-threshold=medium || true
-      
-      - name: Monitor project (optional)
+      - name: Monitor project
         if: github.event_name == 'push'
-        run: snyk monitor || true
+        run: snyk monitor --all-projects || true
