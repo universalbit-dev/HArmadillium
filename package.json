@@ -1,0 +1,23 @@
+{
+  "name": "harmadillium",
+  "version": "0.1.0",
+  "description": "Placeholder package.json for the future Node.js app for HArmadillium HA cluster installation, optimization and management",
+  "private": true,
+  "author": "universalbit-dev",
+  "license": "MIT",
+  "keywords": [
+    "ha-cluster",
+    "corosync",
+    "pacemaker",
+    "nginx",
+    "apache2",
+    "high-availability",
+    "armadillium"
+  ],
+  "scripts": {
+    "test": "echo \"No tests defined yet\" && exit 0"
+  },
+  "dependencies": {
+    "noop": "*"
+  }
+}
