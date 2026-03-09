@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main, master ]
   schedule:
-    - cron: '0 2 * * 1'   # Weekly on Monday at 02:00 UTC (reduces noise vs daily)
+    - cron: '0 2 * * 1'   # Weekly on Monday at 02:00 UTC
   workflow_dispatch:
     inputs:
       severity_threshold:
@@ -16,7 +16,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true   # Avoid stacking duplicate runs on rapid pushes
+  cancel-in-progress: true
 
 jobs:
   snyk-scan:
@@ -45,12 +45,12 @@ jobs:
       # ── 3. Install project dependencies ───────────────────────────────────
       - name: Install dependencies in workers
         working-directory: ./workers
-        run: npm ci   # Prefer ci over install for reproducible installs
+        run: npm ci
 
-      # ── 4. Snyk vulnerability test (open-source) ──────────────────────────
+      # ── 4. Snyk vulnerability test – open-source (produces snyk-oss.sarif) ─
       - name: Run Snyk test – open source vulnerabilities
         uses: snyk/actions/node@master
-        continue-on-error: true   # Don't block CI; results go to Security tab
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -59,45 +59,41 @@ jobs:
             --severity-threshold=${{ github.event.inputs.severity_threshold || 'medium' }}
             --sarif-file-output=snyk-oss.sarif
 
-      # ── 5. Upload OSS SARIF to GitHub Security tab ────────────────────────
+      # ── 5. Upload OSS SARIF – only when the file was actually created ──────
       - name: Upload Snyk OSS SARIF results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()   # Upload even when Snyk step fails
+        if: hashFiles('snyk-oss.sarif') != ''
         with:
           sarif_file: snyk-oss.sarif
           category: snyk-oss
 
-      # ── 6. Snyk Code (SAST) scan ──────────────────────────────────────────
-      - name: Run Snyk Code – static analysis
-        uses: snyk/actions/node@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: code test
-          args: >-
-            --sarif-file-output=snyk-code.sarif
-            --severity-threshold=${{ github.event.inputs.severity_threshold || 'medium' }}
+      # ── 6. Install Snyk CLI (needed for code test + monitor) ──────────────
+      - name: Install Snyk CLI
+        run: npm install -g snyk
 
-      # ── 7. Upload Code SARIF to GitHub Security tab ───────────────────────
+      # ── 7. Authenticate Snyk CLI ───────────────────────────────────────────
+      - name: Authenticate Snyk CLI
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      # ── 8. Snyk Code – SAST scan (produces snyk-code.sarif) ───────────────
+      # snyk/actions/node does NOT support "command: code test"; use the CLI directly.
+      - name: Run Snyk Code – static analysis
+        continue-on-error: true
+        run: |
+          snyk code test \
+            --severity-threshold=${{ github.event.inputs.severity_threshold || 'medium' }} \
+            --sarif-file-output=snyk-code.sarif || true
+
+      # ── 9. Upload Code SARIF – only when the file was actually created ─────
       - name: Upload Snyk Code SARIF results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: hashFiles('snyk-code.sarif') != ''
         with:
           sarif_file: snyk-code.sarif
           category: snyk-code
 
-      # ── 8. Snyk monitor (push events only) ────────────────────────────────
-      - name: Install Snyk CLI
-        if: github.event_name == 'push'
-        run: npm install -g snyk
-
-      - name: Authenticate Snyk CLI
-        if: github.event_name == 'push'
-        run: snyk auth ${{ secrets.SNYK_TOKEN }}
-
+      # ── 10. Snyk monitor (push events only) ───────────────────────────────
       - name: Monitor project on Snyk.io
         if: github.event_name == 'push'
         run: snyk monitor --all-projects --org=${{ vars.SNYK_ORG_ID }} || true
         # SNYK_ORG_ID: set as a repository variable (Actions > Variables)
-        # Remove the || true if you want a failed monitor to fail the job
