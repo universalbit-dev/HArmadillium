@@ -34,21 +34,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ── 2. Node.js setup ──────────────────────────────────────────────────
-      # cache-dependency-path uses a glob – if no lock file exists the cache
-      # step is simply skipped rather than erroring out.
+      # ── 2. Node.js setup – no cache, repo has no committed lock file ───────
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          # cache: omitted intentionally – no package-lock.json in the repo
 
-      # ── 3. Install dependencies (only when workers/ exists) ───────────────
+      # ── 3. Install project dependencies ───────────────────────────────────
       - name: Install dependencies in workers
-        if: hashFiles('workers/package-lock.json') != ''
         working-directory: ./workers
-        run: npm ci
+        run: npm install   # npm ci requires a committed lock file; use install instead
 
       # ── 4. Install Snyk CLI ────────────────────────────────────────────────
       - name: Install Snyk CLI
@@ -58,7 +54,7 @@ jobs:
       - name: Authenticate Snyk CLI
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-      # ── 6. Snyk test – open-source vulnerabilities ────────────────────────
+      # ── 6. Snyk OSS test (produces snyk-oss.sarif) ────────────────────────
       - name: Run Snyk test – open source vulnerabilities
         continue-on-error: true
         env:
@@ -69,7 +65,7 @@ jobs:
             --severity-threshold=${{ github.event.inputs.severity_threshold || 'medium' }} \
             --sarif-file-output=snyk-oss.sarif || true
 
-      # ── 7. Upload OSS SARIF ────────────────────────────────────────────────
+      # ── 7. Upload OSS SARIF – only when file was created ──────────────────
       - name: Upload Snyk OSS SARIF results
         uses: github/codeql-action/upload-sarif@v3
         if: hashFiles('snyk-oss.sarif') != ''
@@ -77,7 +73,7 @@ jobs:
           sarif_file: snyk-oss.sarif
           category: snyk-oss
 
-      # ── 8. Snyk Code – SAST scan ──────────────────────────────────────────
+      # ── 8. Snyk Code – SAST scan (produces snyk-code.sarif) ───────────────
       - name: Run Snyk Code – static analysis
         continue-on-error: true
         run: |
@@ -85,7 +81,7 @@ jobs:
             --severity-threshold=${{ github.event.inputs.severity_threshold || 'medium' }} \
             --sarif-file-output=snyk-code.sarif || true
 
-      # ── 9. Upload Code SARIF ───────────────────────────────────────────────
+      # ── 9. Upload Code SARIF – only when file was created ─────────────────
       - name: Upload Snyk Code SARIF results
         uses: github/codeql-action/upload-sarif@v3
         if: hashFiles('snyk-code.sarif') != ''
@@ -97,3 +93,4 @@ jobs:
       - name: Monitor project on Snyk.io
         if: github.event_name == 'push'
         run: snyk monitor --all-projects --org=${{ vars.SNYK_ORG_ID }} || true
+        # SNYK_ORG_ID: set as a repository variable (Actions > Variables)
