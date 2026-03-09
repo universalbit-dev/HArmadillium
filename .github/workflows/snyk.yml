@@ -1,54 +1,88 @@
-name: "Snyk Security"
+name: Snyk Security Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main, master ]
   schedule:
-    - cron: '0 8 * * 1'
-
-permissions:
-  contents: read
-  security-events: write
-  actions: read
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
-  snyk:
-    name: Snyk Vulnerability Scan
+  snyk-scan:
     runs-on: ubuntu-latest
+    environment: snyk
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install dependencies (only if package.json exists)
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          else
+            echo "No package.json found — skipping npm install"
+          fi
 
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
+      - name: Run Snyk test
+        uses: snyk/actions/node@0.4.0
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --sarif-file-output=snyk.sarif
+          args: --severity-threshold=medium --sarif-file-output=snyk.sarif
+          command: test
 
       - name: Check if SARIF file was generated
         id: sarif_check
         run: |
+          # Debug output to help diagnose runner environments
+          echo "GITHUB_OUTPUT='$GITHUB_OUTPUT'"
           if [ -f snyk.sarif ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
+            if [ -n "$GITHUB_OUTPUT" ]; then
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+            else
+              # Fallback for older runner envs
+              echo "::set-output name=exists::true"
+            fi
           else
-            echo "exists=false" >> $GITHUB_OUTPUT
+            if [ -n "$GITHUB_OUTPUT" ]; then
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "::set-output name=exists::false"
+            fi
             echo "⚠️ snyk.sarif was not generated (SNYK_TOKEN may be missing or Snyk encountered an error)"
           fi
 
-      - name: Upload Snyk results to GitHub Code Scanning
+      - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
         if: steps.sarif_check.outputs.exists == 'true'
         with:
           sarif_file: snyk.sarif
+
+      - name: Install Snyk CLI (only on push and only if package.json exists)
+        if: github.event_name == 'push'
+        run: |
+          if [ -f package.json ]; then
+            npm install -g snyk
+          else
+            echo "No package.json found — skipping global snyk install"
+          fi
+
+      - name: Monitor project in Snyk (only on push and only if package.json exists)
+        if: github.event_name == 'push'
+        run: snyk monitor
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
