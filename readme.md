@@ -20,6 +20,18 @@ Help us grow and continue innovating!
 
 The `ha_cluster_setup.sh` script is a **beginner-friendly starting point** for setting up a High Availability (HA) cluster. It simplifies and accelerates the installation process by automating the basic steps while skipping detailed configurations for advanced tools like `corosync` and `pcs`. This allows users to quickly install required components and focus on further customization later.
 
+```bash
+chmod a+x ha_cluster_setup.sh
+./ha_cluster_setup.sh
+```
+
+Explanation:
+
+    chmod a+x ha_cluster_setup.sh
+    This command makes the script executable by all users.
+    ./ha_cluster_setup.sh
+    This runs the script directly if you’re in the same directory as the file.
+
 ### Key Features for Beginners:
 1. **Basic Installation**:
    - Installs critical HA tools like `corosync`, `pacemaker`, `pcs`, and supporting tools such as `ufw`, `haproxy`, `fail2ban`, `nginx`, and `apache2`.
