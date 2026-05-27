@@ -10,9 +10,15 @@ Help us grow and continue innovating!
 <p align="center"> <img src="docs/assets/images/Bitto_white_background.png" alt="Bitto mascotte" width="200" /> </p>
 
 ---
-<p>
-  <img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ThinClients.png" />
-</p>
+
+```bash
+  _    _  ___                           _ _ _ _                 
+ | |  | |/ _ \                         | (_) (_)                
+ | |__| | |_| |_ __ _ __ ___   __ _  __| |_| |_ _   _ _ __ ___  
+ |  __  |  _  | '__| '_ ` _ \ / _` |/ _` | | | | | | | '_ ` _ \ 
+ | |  | | | | | |  | | | | | | (_| | (_| | | | | |_| | | | | | |
+ |_|  |_|_| |_|_|  |_| |_| |_|\__,_|\__,_|_|_|_|\__,_|_| |_| |_|
+```
 
 # High Availability Clusters 
 * [HArmadillium](https://github.com/universalbit-dev/armadillium/blob/main/HArmadillium.md)
