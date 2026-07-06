@@ -117,7 +117,7 @@ if [ "$IS_MASTER" = "y" ] || [ "$IS_MASTER" = "Y" ]; then
 else
     # 3. Scalable Onboarding Pipeline for Independent Peer Joiner Nodes
     echo "Preparing to join an existing cluster..."
-    echo "Please enter the target IP of your Genesis Master thin client (e.g., 10.0.0.1):"
+    echo "Please enter the target IP of your Genesis Master thin client (e.g., 192.168.1.141):"
     read -r MASTER_IP
     
     # Dynamically determine or ask for SSH user instead of hardcoding
