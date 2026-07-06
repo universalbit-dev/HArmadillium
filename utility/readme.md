@@ -12,6 +12,36 @@
 
 ---
 
+```bash
+                     +-----------------------------------+
+                     |        GENESIS MASTER NODE        |
+                     |  [Central Control & Provisioner]  |
+                     +-------------------+---------------+
+                                         |
+                                         |  1. Dispatches Configuration & SSL
+                                         |     (via dynamic_installer.sh & make_certs.sh)
+                                         v
+================================== NETWORK SWITCH / LAN ==================================
+       |                                      |                               |
+       | 2. Connects to                       | 2. Connects to                | 2. Connects to
+       v                                      v                               v
++------v----------------------+       +-------v---------------------+       +-v---------------------------+
+|        THIN CLIENT 1        |       |        THIN CLIENT 2        |       |        THIN CLIENT N        |
++-----------------------------+       +-----------------------------+       +-----------------------------+
+| [Security Barrier]          |       | [Security Barrier]          |       | [Security Barrier]          |
+| - ha_rules.sh (UFW Engine)  |       | - ha_rules.sh (UFW Engine)  |       | - ha_rules.sh (UFW Engine)  |
+|                             |       |                             |       |                             |
+| [Cluster Core]              |       | [Cluster Core]              |       | [Cluster Core]              |
+| - Pacemaker & Corosync      |  <==> | - Pacemaker & Corosync      | <==>  | - Pacemaker & Corosync      |
+| - Secure TLS Layer          |       | - Secure TLS Layer          |       | - Secure TLS Layer          |
++-----------------------------+       +-----------------------------+       +-----------------------------+
+       ^                                                                                   ^
+       +====================== Corosync Heartbeat Loop (Mesh Network) =====================+
+                             [Strict Isolation / Prevents Split-Brain]
+
+```
+
+
 ## 🛠️ Script Overview
 
 This directory contains the core automation and security orchestration scripts for managing high-availability clusters.
