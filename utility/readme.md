@@ -39,12 +39,12 @@ This directory contains the core automation and security orchestration scripts f
             │
             │  Orchestrate Peer Clones over Network
             ▼
- [THIN CLIENT 02 to N: PEER JOINERS]
+[THIN CLIENT 02 to N: PEER JOINERS]
     ├── 1. SSH into target node (Ubuntu 24.04 LTS Onboard)
     ├── 2. git clone repository
     ├── 3. cd HArmadillium/utility
-    ├── 4. Run ./dynamic_installer.sh  ---> (Select: 'n' + <MASTER_IP> to join)
-    └── 5. Run ./ha_rules.sh           ---> (Applies matching node UFW firewall)
+    ├── 4. Run ./dynamic_installer.sh  ---> (Select: 'n' -> script auto-detects local IP -> enter <MASTER_IP> when prompted)
+    └── 5. Run ./ha_rules.sh           ---> (Execute: ./ha_rules.sh <MASTER_IP> <LOCAL_IP>)
 
 ==========================================================================================
                     [Strict Mesh Network / Unlimited Development]
@@ -99,26 +99,29 @@ This wipes default configurations, guarantees standard management paths on Port 
 
 ---
 
-### 🔵 Phase B: Scaling Peer Joiner Nodes (`Thin Client 02` to `N`)
+### 🔵 Phase B: Scaling Peer Joiner Nodes (Thin Client 02 to N)
 
 1. **Access Peer Target:** Establish an SSH session into your clean destination thin client.
 2. **Pull Workspace:** Duplicate the exact core suite code:
+
 ```bash
 git clone https://github.com/universalbit-dev/HArmadillium.git
 cd HArmadillium/utility
 
 ```
 
-
 3. **Execute Cluster Join:** Launch the setup script:
+
 ```bash
 ./dynamic_installer.sh
 
 ```
 
+Choose **no** when asked if this is a master node. Enter the static IP address belonging to **Thin Client 01 (Genesis Master)**. The machine will clean its local ecosystem, authenticate mutually with the parent node, and pass secure remote onboarding commands over SSH to insert itself directly into the cluster grid.
 
-Choose `no` when asked if this is a master node. Enter the static IP address belonging to **Thin Client 01 (Genesis Master)**. The machine will clean its local ecosystem, authenticate mutually with the parent node, and pass secure remote onboarding commands over SSH to insert itself directly into the cluster grid.
 4. **Synchronize Firewalls (Thin Client 02 example):** Tie the new node safely into the existing network matrix by providing the master address followed explicitly by the peer's own local identity:
+
+
 ```bash
 ./ha_rules.sh <MASTER_IP_OF_THINCLIENT_01> <LOCAL_IP_OF_THINCLIENT_02>
 
@@ -126,5 +129,3 @@ Choose `no` when asked if this is a master node. Enter the static IP address bel
 
 
 The engine contacts the master dynamically to gather active node identities, configures a shared communication pool, and shields the Corosync mesh to maintain cluster quorum health safely.
-
-```
