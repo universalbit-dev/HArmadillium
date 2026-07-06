@@ -1,0 +1,16 @@
+# HArmadillium Generated Cryptographic Assets
+utility/certs/
+*.key
+*.crt
+*.pem
+*.csr
+
+# Node / Package Manager Dependencies
+node_modules/
+package-lock.json
+.npm/
+
+# Cluster Runtime Tokens & Temporary State
+*.token
+*.tmp
+*.log
