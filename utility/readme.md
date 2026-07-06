@@ -10,37 +10,6 @@
 [![Cluster manager](https://img.shields.io/badge/HA-Pacemaker%20%2B%20Corosync-red?style=flat-flat)](https://clusterlabs.org)
 [![Firewall Engine](https://img.shields.io/badge/Firewall-UFW%20Optimized-darkgreen?style=flat-flat)](https://launchpad.net/ufw)
 
----
-
-```bash
-                     +-----------------------------------+
-                     |        GENESIS MASTER NODE        |
-                     |  [Central Control & Provisioner]  |
-                     +-------------------+---------------+
-                                         |
-                                         |  1. Dispatches Configuration & SSL
-                                         |     (via dynamic_installer.sh & make_certs.sh)
-                                         v
-================================== NETWORK SWITCH / LAN ==================================
-       |                                      |                               |
-       | 2. Connects to                       | 2. Connects to                | 2. Connects to
-       v                                      v                               v
-+------v----------------------+       +-------v---------------------+       +-v---------------------------+
-|        THIN CLIENT 1        |       |        THIN CLIENT 2        |       |        THIN CLIENT N        |
-+-----------------------------+       +-----------------------------+       +-----------------------------+
-| [Security Barrier]          |       | [Security Barrier]          |       | [Security Barrier]          |
-| - ha_rules.sh (UFW Engine)  |       | - ha_rules.sh (UFW Engine)  |       | - ha_rules.sh (UFW Engine)  |
-|                             |       |                             |       |                             |
-| [Cluster Core]              |       | [Cluster Core]              |       | [Cluster Core]              |
-| - Pacemaker & Corosync      |  <==> | - Pacemaker & Corosync      | <==>  | - Pacemaker & Corosync      |
-| - Secure TLS Layer          |       | - Secure TLS Layer          |       | - Secure TLS Layer          |
-+-----------------------------+       +-----------------------------+       +-----------------------------+
-       ^                                                                                   ^
-       +====================== Corosync Heartbeat Loop (Mesh Network) =====================+
-                             [Strict Isolation / Prevents Split-Brain]
-
-```
-
 
 ## 🛠️ Script Overview
 
