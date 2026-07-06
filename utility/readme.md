@@ -66,7 +66,7 @@ chmod +x *.sh
 
 1. **Clone & Navigate:** Jump into your clean onboard Ubuntu environment, pull the cluster configuration engine, and move to the target path:
 ```bash
-git clone [https://github.com/universalbit-dev/HArmadillium.git](https://github.com/universalbit-dev/HArmadillium.git)
+git clone https://github.com/universalbit-dev/HArmadillium.git
 cd HArmadillium/utility
 
 ```
@@ -104,7 +104,7 @@ This wipes default configurations, guarantees standard management paths on Port 
 1. **Access Peer Target:** Establish an SSH session into your clean destination thin client.
 2. **Pull Workspace:** Duplicate the exact core suite code:
 ```bash
-git clone [https://github.com/universalbit-dev/HArmadillium.git](https://github.com/universalbit-dev/HArmadillium.git)
+git clone https://github.com/universalbit-dev/HArmadillium.git
 cd HArmadillium/utility
 
 ```
@@ -117,7 +117,7 @@ cd HArmadillium/utility
 ```
 
 
-Choose `n` when asked if this is a master node. Enter the static IP address belonging to **Thin Client 01 (Genesis Master)**. The machine will clean its local ecosystem, authenticate mutually with the parent node, and pass secure remote onboarding commands over SSH to insert itself directly into the cluster grid.
+Choose `no` when asked if this is a master node. Enter the static IP address belonging to **Thin Client 01 (Genesis Master)**. The machine will clean its local ecosystem, authenticate mutually with the parent node, and pass secure remote onboarding commands over SSH to insert itself directly into the cluster grid.
 4. **Synchronize Firewalls (Thin Client 02 example):** Tie the new node safely into the existing network matrix by providing the master address followed explicitly by the peer's own local identity:
 ```bash
 ./ha_rules.sh <MASTER_IP_OF_THINCLIENT_01> <LOCAL_IP_OF_THINCLIENT_02>
