@@ -36,7 +36,7 @@ SSH_USER=${3:-$CURRENT_USER}
 if [ -z "$MASTER_IP" ] || [ -z "$DETECTED_IP" ]; then
     echo "❌ Error: Missing parameters."
     echo "Usage:   ./ha_rules.sh <MASTER_IP> <LOCAL_IP> [SSH_USER]"
-    echo "Example: ./ha_rules.sh 192.168.2.1 192.168.2.163 clusteradmin"
+    echo "Example: ./ha_rules.sh 192.168.1.141 192.168.1.142 armadillium01"
     exit 1
 fi
 
