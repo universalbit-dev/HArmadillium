@@ -11,16 +11,6 @@ Help us grow and continue innovating!
 
 ---
 
-```bash
-  _    _  ___                           _ _ _ _                 
- | |  | |/ _ \                         | (_) (_)                
- | |__| | |_| |_ __ _ __ ___   __ _  __| |_| |_ _   _ _ __ ___  \
- |  __  |  _  | '__| '_ ` _ \ / _` |/ _` | | | | | | | '_ ` _ \ \
- | |  | | | | | |  | | | | | | (_| | (_| | | | | |_| | | | | | |
- |_|  |_|_| |_|_|  |_| |_| |_|\__,_|\__,_|_|_|_|\__,_|_| |_| |_|
-
-```
-
 # High Availability Clusters with HArmadillium
 
 Welcome to **HArmadillium**, an open-source educational and production-ready framework designed to streamline the deployment, optimization, and hardening of High-Availability Linux clusters using Pacemaker, Corosync, Nginx, Apache2, and UFW.
