@@ -141,7 +141,7 @@ sudo ./ha_rules.sh <MASTER_IP_THIN_CLIENT_01> <LOCAL_IP_THIN_CLIENT_02>
 
 ##### Basic Security Containment (Optional Advanced Inspection)
 
-* [SELKS Network Analytics Container Hub](https://github.com/universalbit-dev/SELKS/pkgs/container/arkimeviewer)
+* [SELKS is NOW Clear NDR - Community](https://www.stamus-networks.com/selks-archive)
 
 ```
 
