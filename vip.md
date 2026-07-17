@@ -15,42 +15,6 @@
 ---
 ### **Architecture Comparison**
 
-```mermaid
-flowchart TD
-    subgraph HA_Cluster
-        direction TB
-        Client[Client]
-        VIP["VIP (192.168.1.140)\nManaged by Pacemaker"]
-        Node1["Node 1\n192.168.1.141"]
-        Node2["Node 2\n192.168.1.142"]
-        Node3["Node 3\n192.168.1.143"]
-        Node4["Node 4\n192.168.1.144"]
-        Client --> VIP
-        VIP --> Node1
-        VIP -.-> Node2
-        VIP -.-> Node3
-        VIP -.-> Node4
-        note1["Active node receives traffic via VIP,\nfailover handled by clustering software"]
-        VIP --- note1
-    end
-
-    subgraph Load_Balancer
-        direction TB
-        LBClient[Client]
-        LB["Nginx/Apache Load Balancer"]
-        LBNode1["Node 1\n192.168.1.141"]
-        LBNode2["Node 2\n192.168.1.142"]
-        LBNode3["Node 3\n192.168.1.143"]
-        LBNode4["Node 4\n192.168.1.144"]
-        LBClient --> LB
-        LB --> LBNode1
-        LB --> LBNode2
-        LB --> LBNode3
-        LB --> LBNode4
-        note2["Traffic distributed to all nodes\nRequires active health checks"]
-        LB --- note2
-    end
-```
 
 ### **Potential Issues with Using 4 Nodes in Upstream**
 1. **Uncoordinated Traffic**:
