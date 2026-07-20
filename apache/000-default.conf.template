@@ -1,0 +1,46 @@
+<VirtualHost *:80>
+    ServerName {{NODE_NAME}}
+    ServerAdmin webmaster@localhost
+
+    ErrorLog ${APACHE_LOG_DIR}/harmadillium_error.log
+    CustomLog ${APACHE_LOG_DIR}/harmadillium_access.log combined
+
+    # Optional HTTP -> HTTPS redirect
+    RewriteEngine On
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://%{HTTP_HOST}:8443%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+<VirtualHost *:8443>
+    ServerName {{NODE_NAME}}
+    ServerAdmin webmaster@localhost
+
+    SSLEngine on
+    SSLCertificateFile {{SSL_CERT}}
+    SSLCertificateKeyFile {{SSL_KEY}}
+
+    # Hardened TLS baseline (adjust per policy)
+    SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+    SSLCipherSuite HIGH:!aNULL:!MD5
+    SSLHonorCipherOrder on
+
+    ProxyPreserveHost On
+    ProxyRequests Off
+
+    # WebSocket + HTTP upstream routing
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} =websocket [NC]
+    RewriteRule /(.*) ws://{{PRIMARY_UPSTREAM}}/$1 [P,L]
+
+    ProxyPass        / http://{{PRIMARY_UPSTREAM}}/
+    ProxyPassReverse / http://{{PRIMARY_UPSTREAM}}/
+
+    RequestHeader set X-Forwarded-Proto "https"
+    RequestHeader set X-Forwarded-Port "8443"
+    RequestHeader set X-Forwarded-For %{REMOTE_ADDR}s
+
+    ErrorLog ${APACHE_LOG_DIR}/harmadillium_ssl_error.log
+    CustomLog ${APACHE_LOG_DIR}/harmadillium_ssl_access.log combined
+</VirtualHost>
+</IfModule>
