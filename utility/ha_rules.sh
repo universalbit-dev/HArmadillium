@@ -1,103 +1,77 @@
-#!/bin/bash
-#
-# HArmadillium Dynamic HA Firewall Component
-# Copyright (C) 2026 universalbit-dev
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 echo "=========================================================="
 echo " HArmadillium Dynamic HA Firewall Component               "
 echo "=========================================================="
 
-MASTER_IP=$1
-DETECTED_IP=$2
+log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [INFO] $*"; }
+warn() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [WARN] $*" >&2; }
+die()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [ERROR] $*" >&2; exit 1; }
 
-# Extract current running local user dynamically
-CURRENT_USER=$(whoami)
-USER_HOME=$HOME
-
-# Safe Fallback: Use 3rd argument if provided, otherwise default to the active local user
-SSH_USER=${3:-$CURRENT_USER}
-
-# 1. Parameter Validation & Subnet-Hidden Help Text
-if [ -z "$MASTER_IP" ] || [ -z "$DETECTED_IP" ]; then
-    echo "❌ Error: Missing parameters."
-    echo "Usage:   ./ha_rules.sh <MASTER_IP> <LOCAL_IP> [SSH_USER]"
-    echo "Example: ./ha_rules.sh 192.168.1.141 192.168.1.142 armadillium01"
-    exit 1
-fi
-
-# Function to validate standard IPv4 format
-validate_ip() {
-    if [[ ! $1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-        echo "❌ Error: Invalid IP address format: $1"
-        exit 1
-    fi
+validate_ipv4() {
+  local ip="$1"
+  [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || return 1
+  IFS='.' read -r a b c d <<< "$ip"
+  for o in "$a" "$b" "$c" "$d"; do
+    (( o >= 0 && o <= 255 )) || return 1
+  done
+  return 0
 }
 
-validate_ip "$MASTER_IP"
-validate_ip "$DETECTED_IP"
+command -v ssh >/dev/null 2>&1 || die "ssh command not found"
+command -v ssh-keyscan >/dev/null 2>&1 || die "ssh-keyscan command not found"
+command -v ufw >/dev/null 2>&1 || die "ufw command not found"
 
-# 2. Fix local SSH ownership obstacles using generic paths
-echo "🔧 Polishing local secure environment permissions for user: $CURRENT_USER..."
-sudo chown -R "${CURRENT_USER}:${CURRENT_USER}" "$USER_HOME/.ssh" || true
-chmod 700 "$USER_HOME/.ssh" || true
-if [ -f "$USER_HOME/.ssh/known_hosts" ]; then
-    chmod 600 "$USER_HOME/.ssh/known_hosts" || true
+MASTER_IP="${1:-}"
+DETECTED_IP="${2:-}"
+SSH_USER="${3:-$(whoami)}"
+
+[[ -n "$MASTER_IP" && -n "$DETECTED_IP" ]] || die "Usage: ./ha_rules.sh <MASTER_IP> <LOCAL_IP> [SSH_USER]"
+validate_ipv4 "$MASTER_IP"  || die "Invalid MASTER_IP: $MASTER_IP"
+validate_ipv4 "$DETECTED_IP" || die "Invalid LOCAL_IP: $DETECTED_IP"
+
+CURRENT_USER="$(whoami)"
+USER_HOME="$HOME"
+KNOWN_HOSTS="$USER_HOME/.ssh/known_hosts"
+
+# Secure local SSH directory
+mkdir -p "$USER_HOME/.ssh"
+chmod 700 "$USER_HOME/.ssh"
+touch "$KNOWN_HOSTS"
+chmod 600 "$KNOWN_HOSTS"
+chown -R "${CURRENT_USER}:${CURRENT_USER}" "$USER_HOME/.ssh" || true
+
+# Safe host-key bootstrap: remove old entry then add fresh fingerprint
+log "Refreshing SSH known_hosts entry for ${MASTER_IP}..."
+ssh-keygen -R "$MASTER_IP" -f "$KNOWN_HOSTS" >/dev/null 2>&1 || true
+ssh-keyscan -H -T 5 "$MASTER_IP" >> "$KNOWN_HOSTS" 2>/dev/null || die "Unable to fetch SSH host key from ${MASTER_IP}"
+
+log "Fetching cluster node IPs from master ${SSH_USER}@${MASTER_IP}..."
+CONFIG_IPS="$(ssh -o BatchMode=yes -o ConnectTimeout=8 "${SSH_USER}@${MASTER_IP}" \
+  "grep -E 'ring[0-9]*_addr:' /etc/corosync/corosync.conf 2>/dev/null | awk '{print \$2}' | grep -E '^[0-9.]+$' || true")" || true
+
+# Build unique node set: discovered + master + local
+mapfile -t NODES < <(printf "%s\n%s\n%s\n" "$CONFIG_IPS" "$MASTER_IP" "$DETECTED_IP" \
+  | awk 'NF' | sort -u)
+
+if [[ ${#NODES[@]} -eq 0 ]]; then
+  die "No valid node IPs discovered."
 fi
 
-# 3. Pre-flight SSH Connectivity Verification
-echo "📡 Verifying SSH access to Master node (${SSH_USER}@${MASTER_IP})..."
-if ! ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 -o BatchMode=yes "${SSH_USER}@${MASTER_IP}" "true" 2>/dev/null; then
-    echo "⚠️ Warning: Non-interactive SSH test failed."
-    echo "Please ensure your SSH public keys are exchanged before continuing."
-    echo "Attempting standard connection (may prompt for password)..."
-fi
+for ip in "${NODES[@]}"; do
+  validate_ipv4 "$ip" || die "Discovered invalid IP: $ip"
+done
 
-echo "🔍 Parsing master cluster blueprints via ${SSH_USER}@${MASTER_IP}..."
-CONFIG_IPS=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "${SSH_USER}@${MASTER_IP}" \
-    "grep -E 'ring._addr:' /etc/corosync/corosync.conf 2>/dev/null" | awk '{print $2}' | grep -E '^[0-9.]+$' || true)
+log "Discovered cluster node grid: ${NODES[*]}"
 
-# Combine blueprint targets, Master IP, and this new local node's detected IP into a unique grid
-NODES=($(echo -e "${CONFIG_IPS}\n${MASTER_IP}\n${DETECTED_IP}" | sort -u))
-echo "🛡️ Hardened Cluster Node Grid Discovered: ${NODES[*]}"
-
-# 4. Firewall Reset and Initialization
-echo "🧱 Resetting and optimizing local UFW rules..."
+log "Resetting and applying UFW policy..."
 sudo ufw --force reset
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 
-# Open global management pathways
-echo "🔓 Allowing incoming infrastructure management (SSH: Port 22)..."
+# Management access
 sudo ufw allow 22/tcp comment 'HArmadillium Management SSH'
 
-# 5. Apply strict IP isolation mapping to core cluster backends
-echo "🔒 Enforcing mesh isolation loops across node matrix..."
+# Cluster mesh rules scoped per node IP
 for NODE_IP in "${NODES[@]}"; do
-    if [ -n "$NODE_IP" ]; then
-        echo "   -> Trusting Node IP: $NODE_IP"
-        sudo ufw allow from "$NODE_IP" to any port 2224 proto tcp comment "HA Cluster Mesh: PCSD from $NODE_IP"
-        sudo ufw allow from "$NODE_IP" to any port 3121 proto tcp comment "HA Cluster Mesh: Pacemaker CRM from $NODE_IP"
-        sudo ufw allow from "$NODE_IP" to any port 5404:5405 proto udp comment "HA Cluster Mesh: Totem Ring from $NODE_IP"
-        sudo ufw allow from "$NODE_IP" to any port 9929 comment "HA Cluster Mesh: Corosync/QNetd from $NODE_IP"
-    fi
-done
-
-sudo ufw --force enable
-echo "=========================================================="
-echo " ✅ SUCCESS: Firewall optimization completed successfully!"
-echo "=========================================================="
