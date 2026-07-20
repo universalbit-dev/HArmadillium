@@ -1,0 +1,14 @@
+upstream websocket {
+    {{UPSTREAM_BACKENDS}}
+}
+
+server {
+    listen 8443 ssl;
+    server_name {{NODE_NAME}};
+    ssl_certificate {{SSL_CERT}};
+    ssl_certificate_key {{SSL_KEY}};
+
+    location / {
+        proxy_pass http://websocket;
+    }
+}
