@@ -1,11 +1,12 @@
 # HArmadillium Core Utilities
 
-📦 **Core Stack Tools**
+📦 **Core Stack Tools**  
 [![Installer](https://img.shields.io/badge/Utility-dynamic__installer.sh-blue?style=flat-flat&logo=gnu-bash&logoColor=white)](./dynamic_installer.sh)
 [![Firewall](https://img.shields.io/badge/Security-ha__rules.sh-success?style=flat-flat&logo=linux&logoColor=white)](./ha_rules.sh)
 [![Crypto](https://img.shields.io/badge/Crypto-make__certs.sh-blueviolet?style=flat-flat&logo=openssl&logoColor=white)](./make_certs.sh)
+[![Heartbeat](https://img.shields.io/badge/Observability-ha__heartbeat.sh-ff69b4?style=flat-flat&logo=heartbeat&logoColor=white)](./ha_heartbeat.sh)
 
-🚀 **System Status & Architecture**
+🚀 **System Status & Architecture**  
 [![Platform](https://img.shields.io/badge/Ubuntu-24.04%20LTS-orange?style=flat-flat&logo=ubuntu&logoColor=white)](https://ubuntu.com)
 [![Cluster manager](https://img.shields.io/badge/HA-Pacemaker%20%2B%20Corosync-red?style=flat-flat)](https://clusterlabs.org)
 [![Firewall Engine](https://img.shields.io/badge/Firewall-UFW%20Optimized-darkgreen?style=flat-flat)](https://launchpad.net/ufw)
@@ -14,11 +15,27 @@
 
 ## 🛠️ Script Overview
 
-This directory contains the core automation and security orchestration scripts for managing high-availability clusters.
+This directory contains automation, security orchestration, and observability scripts for high-availability clusters.
 
-*   **`dynamic_installer.sh`**: Automates package installation (`corosync`, `pacemaker`, `pcs`, `ufw`, `fail2ban`) and configures cluster pairing or automated node-joining workflows.
-*   **`ha_rules.sh`**: Orchestrates strict UFW firewall boundaries, dynamically mapping out all active nodes in the cluster matrix to protect communication channels.
-*   **`make_certs.sh`**: Generates 2048-bit RSA self-signed TLS/SSL credentials validating internal cluster host configurations and IP mappings.
+- **`dynamic_installer.sh`**
+  - Installs and configures cluster dependencies (`corosync`, `pacemaker`, `pcs`, `ufw`, `fail2ban`)
+  - Supports genesis initialization and peer join flows
+  - Applies dynamic Stage 3 web stack setup (NGINX or Apache)
+  - Optionally installs heartbeat as a systemd service
+
+- **`ha_rules.sh`**
+  - Applies UFW hardening for cluster mesh communication
+  - Dynamically maps peer nodes from cluster configuration
+  - Restricts ingress to required management and HA ports
+
+- **`make_certs.sh`**
+  - Generates self-signed TLS certificates with SAN entries
+  - Supports host/IP-based internal validation use cases
+
+- **`ha_heartbeat.sh`**
+  - Monitors peer liveness using ICMP/TCP/UDP checks
+  - Writes human-readable logs and JSONL telemetry
+  - Supports optional failover command execution on threshold breach
 
 ---
 
@@ -26,106 +43,177 @@ This directory contains the core automation and security orchestration scripts f
 
 ```text
 ==========================================================================================
-                      THIN CLIENT HA SETUP PIPELINE (Ubuntu 24.04 LTS) 
+                      THIN CLIENT HA SETUP PIPELINE (Ubuntu 24.04 LTS)
 ==========================================================================================
 
- [THIN CLIENT 01: GENESIS MASTER]
-    ├── 1. Onboard Status: Ubuntu 24.04 LTS Ready
-    ├── 2. git clone repository
+ [GENESIS MASTER NODE]
+    ├── 1. Prepare Ubuntu 24.04 LTS
+    ├── 2. Clone repository
     ├── 3. cd HArmadillium/utility
-    ├── 4. Run ./dynamic_installer.sh  ---> (Select: 'y' to initialize cluster)
-    ├── 5. Run ./make_certs.sh         ---> (Generates cluster-wide TLS assets)
-    └── 6. Run ./ha_rules.sh           ---> (Applies secure master UFW rules)
+    ├── 4. Run ./dynamic_installer.sh  ---> Select 'y'
+    ├── 5. Run ./make_certs.sh
+    ├── 6. Run ./ha_rules.sh           ---> master/local IP parameters
+    └── 7. Run ./ha_heartbeat.sh       ---> peer health telemetry
+
             │
-            │  Orchestrate Peer Clones over Network
             ▼
-[THIN CLIENT 02 to N: PEER JOINERS]
-    ├── 1. SSH into target node (Ubuntu 24.04 LTS Onboard)
-    ├── 2. git clone repository
+
+ [PEER NODES]
+    ├── 1. SSH into node
+    ├── 2. Clone repository
     ├── 3. cd HArmadillium/utility
-    ├── 4. Run ./dynamic_installer.sh  ---> (Select: 'n' -> script auto-detects local IP -> enter <MASTER_IP> when prompted)
-    └── 5. Run ./ha_rules.sh           ---> (Execute: ./ha_rules.sh <MASTER_IP> <LOCAL_IP>)
+    ├── 4. Run ./dynamic_installer.sh  ---> Select 'n' and provide master IP
+    ├── 5. Run ./ha_rules.sh           ---> master/local IP parameters
+    └── 6. Run ./ha_heartbeat.sh       ---> local peer visibility
 
 ==========================================================================================
-                    [Strict Mesh Network / Unlimited Development]
-
 ```
 
 ---
 
-## 🚀 Execution & Step-by-Step Guide
+## 🚀 Execution Guide
 
-Ensure all utility scripts have executable permissions before deployment:
+Set executable permission:
 
 ```bash
 chmod +x *.sh
-
 ```
 
-### 🟢 Phase A: Initializing the Genesis Master Node (`Thin Client 01`)
+### Phase A — Initialize Genesis Master
 
-1. **Clone & Navigate:** Jump into your clean onboard Ubuntu environment, pull the cluster configuration engine, and move to the target path:
 ```bash
 git clone https://github.com/universalbit-dev/HArmadillium.git
 cd HArmadillium/utility
-
+sudo ./dynamic_installer.sh
 ```
 
+When prompted, select `y` for genesis master initialization.
 
-2. **Launch Node Base:** Execute the primary installer framework:
-```bash
-./dynamic_installer.sh
+Generate TLS assets:
 
-```
-
-
-Choose `y` when prompted if this is your Genesis Master node. The engine clears previous tokens, spins up the `pcsd` backend daemon, assigns local administrative credentials, and forces an isolated single-node architecture cluster configuration.
-3. **Generate TLS Certs:** Run the cryptographic certificate generator:
 ```bash
 ./make_certs.sh
-
 ```
 
+Apply firewall policy:
 
-This automatically reads the primary LAN routing table, creates a dynamic configuration, and outputs secure cluster key chains to a local `certs/` folder.
-4. **Lock Down Access:** Secure the master network boundaries by executing the rule framework using your Master IP for both arguments:
 ```bash
-./ha_rules.sh <MASTER_IP> <MASTER_IP>
-
+./ha_rules.sh <MASTER_IP> <LOCAL_IP> [SSH_USER]
 ```
 
+Run heartbeat monitor:
 
-This wipes default configurations, guarantees standard management paths on Port 22, and drops unauthenticated synchronization packets.
+```bash
+sudo ./ha_heartbeat.sh \
+  --nodes "<NODE_IP_1>,<NODE_IP_2>,<NODE_IP_3>" \
+  --check-tcp --tcp-ports "22,2224" \
+  --check-pcs --check-corosync \
+  --summary-every 10
+```
+
+### Phase B — Join Peer Nodes
+
+```bash
+git clone https://github.com/universalbit-dev/HArmadillium.git
+cd HArmadillium/utility
+sudo ./dynamic_installer.sh
+```
+
+When prompted, select `n` and provide the genesis master IP.
+
+Then apply firewall rules and start heartbeat:
+
+```bash
+./ha_rules.sh <MASTER_IP> <LOCAL_IP> [SSH_USER]
+sudo ./ha_heartbeat.sh --nodes "<NODE_IP_1>,<NODE_IP_2>,<NODE_IP_3>"
+```
 
 ---
 
-### 🔵 Phase B: Scaling Peer Joiner Nodes (Thin Client 02 to N)
+## 💓 `ha_heartbeat.sh` Quick Reference
 
-1. **Access Peer Target:** Establish an SSH session into your clean destination thin client.
-2. **Pull Workspace:** Duplicate the exact core suite code:
-
-```bash
-git clone https://github.com/universalbit-dev/HArmadillium.git
-cd HArmadillium/utility
-
-```
-
-3. **Execute Cluster Join:** Launch the setup script:
+Minimal:
 
 ```bash
-./dynamic_installer.sh
-
+./ha_heartbeat.sh --nodes "IP1,IP2,IP3"
 ```
 
-Choose **no** when asked if this is a master node. Enter the static IP address belonging to **Thin Client 01 (Genesis Master)**. The machine will clean its local ecosystem, authenticate mutually with the parent node, and pass secure remote onboarding commands over SSH to insert itself directly into the cluster grid.
+Common options:
 
-4. **Synchronize Firewalls (Thin Client 02 example):** Tie the new node safely into the existing network matrix by providing the master address followed explicitly by the peer's own local identity:
+- `--self-ip <IP>`
+- `--interval <seconds>`
+- `--timeout <seconds>`
+- `--fail-threshold <count>`
+- `--check-tcp --tcp-ports "22,2224"`
+- `--check-udp --udp-ports "5404,5405"`
+- `--check-pcs`
+- `--check-corosync`
+- `--summary-every <N>`
+- `--log-file <path>`
+- `--raw-out <path>`
+- `--failover-cmd "<command>"`
 
+Recommended LAN profile:
 
 ```bash
-./ha_rules.sh <MASTER_IP_OF_THINCLIENT_01> <LOCAL_IP_OF_THINCLIENT_02>
-
+sudo ./ha_heartbeat.sh \
+  --nodes "IP1,IP2,IP3" \
+  --interval 3 \
+  --timeout 2 \
+  --fail-threshold 5 \
+  --check-tcp --tcp-ports "22,2224" \
+  --check-pcs --check-corosync \
+  --summary-every 10
 ```
 
+---
 
-The engine contacts the master dynamically to gather active node identities, configures a shared communication pool, and shields the Corosync mesh to maintain cluster quorum health safely.
+## ✅ Validation Checklist
+
+```bash
+sudo pcs status
+sudo pcs status nodes
+sudo systemctl status pcsd --no-pager
+sudo systemctl status nginx --no-pager
+sudo systemctl status apache2 --no-pager
+sudo systemctl status ha-heartbeat.service --no-pager
+sudo ufw status numbered
+```
+
+---
+
+## 🔐 Security Guidance
+
+- Use strong cluster credentials (minimum length and non-reusable patterns).
+- Restrict private key permissions:
+  ```bash
+  chmod 600 certs/*.key
+  ```
+- Treat heartbeat logs as sensitive operational telemetry.
+- Avoid exposing internal IP topology in public issue trackers/screenshots.
+
+---
+
+## 🧩 Troubleshooting
+
+- **Heartbeat flapping (UP/DOWN oscillation)**  
+  Increase tolerance parameters (`interval`, `timeout`, `fail-threshold`).
+
+- **Node already member / already exists**  
+  Verify cluster state:
+  ```bash
+  sudo pcs status nodes
+  ```
+
+- **TLS startup issues in web stack**  
+  Verify expected cert/key paths and permissions, then retest service config.
+
+- **Split cluster due to multiple genesis initializations**  
+  Rebuild with a single authoritative genesis node and rejoin peers in non-master mode.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.  
+See the repository root [LICENSE]() file for full text.
