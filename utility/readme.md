@@ -216,4 +216,4 @@ sudo ufw status numbered
 ## 📄 License
 
 This project is licensed under the **MIT License**.  
-See the repository root [LICENSE]() file for full text.
+See the repository root [LICENSE](https://github.com/universalbit-dev/HArmadillium/blob/main/LICENSE) file for full text.
