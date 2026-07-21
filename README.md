@@ -1,4 +1,5 @@
 ## 📢 Support the UniversalBit Project
+
 Help us grow and continue innovating!  
 - [Support the UniversalBit Project](https://github.com/universalbit-dev/universalbit-dev/tree/main/support)  
 - [Learn about Disambiguation](https://en.wikipedia.org/wiki/Wikipedia:Disambiguation)  
@@ -7,219 +8,169 @@ Help us grow and continue innovating!
 ---
 
 #### Unlimited Digital Development Environment for High Availability Clusters
-<p align="center"> <img src="docs/assets/images/Bitto_Ascii.png" alt="Bitto mascotte" width="200" /> </p>
+<p align="center">
+  <img src="docs/assets/images/Bitto_Ascii.png" alt="Bitto mascotte" width="200" />
+</p>
 
 ---
 
 # High Availability Clusters with HArmadillium
 
-Welcome to **HArmadillium**, an open-source educational and production-ready framework designed to streamline the deployment, optimization, and hardening of High-Availability Linux clusters using Pacemaker, Corosync, PCS, and hardened reverse-proxy service layers.
+Welcome to **HArmadillium**, an open-source educational and production-ready framework for deploying, validating, and hardening Linux High Availability clusters with:
+
+- **Pacemaker**
+- **Corosync**
+- **PCS**
+- **Dynamic NGINX/Apache template rendering**
+- **UFW + Fail2Ban security controls**
 
 ---
 
-## 🗺️ The HArmadillium Learning Roadmap
-
-HArmadillium is architected to support users at different stages of their High Availability journey.
+## 🗺️ HArmadillium Learning Roadmap
 
 ```text
   [ Node ]
          │
          ├──► 1: Propedeutic Sandbox (ha_cluster_setup.sh)
-         │    └─ Learn local network dependencies, SSL, proxying, and basic security inline.
+         │    └─ Learn networking, SSL, proxy, and baseline security locally.
          │
          ├──► 2: Automated Production Grid (utility/)
-         │    └─ Bootstrap cluster membership, authentication, and node roles dynamically.
+         │    └─ Bootstrap roles, membership, and authentication flows.
          │
-         └──► 3: Extended Per-Node Service Configuration (nginx/, apache/, ssl/)
-              └─ Apply the final node-specific webserver and certificate configuration.
+         └──► 3: Dynamic Service Layer (templated nginx/apache)
+              └─ Render final runtime configs from templates per node context.
 ```
 
 ---
 
-## 🎯 Stage 1: The Propedeutic Sandbox (`ha_cluster_setup.sh`)
+## 🎯 Stage 1 — Propedeutic Sandbox (`ha_cluster_setup.sh`)
 
-For users approaching clustering for the first time who cannot study all component complexities simultaneously, this script serves as a structured monolithic environment builder.
+Designed for first-time cluster learning before multi-node rollout.
 
-* **Auto-Discovery:** Automatically fingerprints active network interfaces, local IPs, and gateways to ensure successful onboarding with zero hardcoding.
-* **Inline Visualization:** Helps explain how Netplan, UFW firewall boundaries, self-signed SSL, and reverse-proxy loops fit together on a single machine before scaling outward.
-* **Learning First:** Best suited for understanding the architecture before moving into a multi-node deployment.
-
----
-
-## 🚀 Stage 2: The Decoupled Utility Suite (`utility/`)
-
-Once the baseline architecture is understood, users can transition to production-oriented utilities for multi-node orchestration.
-
-* `dynamic_installer.sh`: Handles modular cluster assembly, node handshakes, and role mappings (Genesis Master vs Joiner Peer).
-* `ha_rules.sh`: Implements zero-trust security mesh isolation filters across the cluster node grid.
-* `make_certs.sh`: Automates generation of secure Subject Alternative Name (SAN) certificate chains.
-
-### What Stage 2 does
-Stage 2 is designed to reduce the most confusing early steps of a cluster deployment, including:
-
-- required package installation
-- interface and IP discovery
-- local and remote `pcsd` authentication
-- cluster bootstrap on the Genesis Master node
-- secure join workflow for peer nodes
-
-### What Stage 2 does not replace
-Stage 2 does **not** replace the final per-node service configuration.  
-After cluster bootstrap, each node still needs its extended webserver configuration.
+- Local environment preparation
+- Network and service baseline validation
+- Security and proxy fundamentals
 
 ---
 
-## 🌐 Stage 3: Extended Per-Node Service Configuration
+## 🚀 Stage 2 — Utility Automation Suite (`utility/`)
 
-Stage 3 is the missing final service layer that completes the deployment.
+Main scripts:
 
-After running the utility scripts, apply the node-specific webserver configuration for the machine you are configuring. This includes:
+- `dynamic_installer.sh`
+- `ha_rules.sh`
+- `make_certs.sh`
+- `ha_heartbeat.sh`
 
-- installing and enabling the webserver layer
-- generating or installing SSL certificates
-- applying the correct node-specific configuration file
-- validating the configuration
-- starting the service and integrating it with the HA resource design
+### Stage 2 responsibilities
 
-### NGINX node configurations
-
-Use the configuration file that matches your node identity:
-
-- Node 01: `nginx/01/default`
-- Node 02: `nginx/02/default`
-- Node 03: `nginx/03/default`
-- Node 04: `nginx/04/default`
-
-Example for **Node 01**:
-
-```bash
-sudo apt install openssl nginx git -y
-sudo mkdir -p /etc/nginx/ssl
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo cp nginx/01/default /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
-If needed, generate the SSL assets from the repository `ssl/` directory before starting NGINX.
-
-### Apache node configurations
-
-As an alternative to NGINX, you can use the Apache node-specific files:
-
-- Node 01: `apache/01/000-default.conf`
-- Node 02: `apache/02/000-default.conf`
-- Node 03: `apache/03/000-default.conf`
-- Node 04: `apache/04/000-default.conf`
-
-### Stage 3 summary
-
-In short:
-
-1. **Stage 1** teaches and prepares the local environment.
-2. **Stage 2** bootstraps the cluster and node relationships.
-3. **Stage 3** applies the final node-specific service configuration.
-
-This means `utility/dynamic_installer.sh` is intended to simplify bootstrap, while `nginx/01/default`, `nginx/02/default`, `nginx/03/default`, and `nginx/04/default` provide the complete extended configuration for each node.
+- Install required cluster packages
+- Initialize a genesis node or join peer nodes
+- Configure local and remote cluster authentication
+- Apply optional firewall and heartbeat integrations
+- Launch Stage 3 dynamic web stack setup
 
 ---
 
-## 🛠️ Step-by-Step Lab Execution Guide
+## 🌐 Stage 3 — Dynamic Template-Based Web Configuration
 
-### 📂 Phase 1: Local Node Groundwork (The Sandbox)
+Stage 3 is **template-driven** and integrated into `utility/dynamic_installer.sh`.
 
-To set up a single thin client sandbox node and study the foundational environment components, execute the educational installer from the root repository directory:
+When prompted by the installer:
+
+- Select web stack (`NGINX` or `Apache`)
+- Provide runtime values (node name, node IP, upstream data)
+- The installer renders final configs from templates:
+  - `nginx/default.template`
+  - `apache/000-default.conf.template`
+- Syntax checks are executed before service restart
+- Default TLS paths are used automatically; self-signed certs are generated if missing
+
+This avoids manual per-node static file duplication and improves consistency.
+
+---
+
+## 🛠️ Quick Start
 
 ```bash
 git clone https://github.com/universalbit-dev/HArmadillium.git
-cd HArmadillium
-sudo ./ha_cluster_setup.sh
-```
-
-*This auto-discovers network vectors, sets safe firewall perimeters, initializes an administrative `pcsd` instance, and configures proxy routing boundaries cleanly.*
-
----
-
-### 🌐 Phase 2: Building the Production Multi-Node Grid (`utility/`)
-
-#### 🟪 Step A: Deploying the Genesis Master Node (Thin Client 01)
-
-1. Navigate into your dedicated utility workspace:
-```bash
 cd HArmadillium/utility
-```
-
-2. Initialize the cluster setup utility:
-```bash
+chmod +x *.sh
 sudo ./dynamic_installer.sh
 ```
 
-3. Respond **yes** when prompted if this machine will act as the Cluster Genesis Master Node.
+- Choose `yes` only on the designated genesis node
+- Choose `no` on peer nodes and provide the genesis node address when prompted
 
-4. Establish security isolation rules by passing the master's own IP address twice to form the initial single-node secure perimeter loop:
+Optional utilities:
+
 ```bash
-sudo ./ha_rules.sh <MASTER_IP> <MASTER_IP>
+./make_certs.sh
+./ha_rules.sh <MASTER_IP> <LOCAL_IP> [SSH_USER]
+sudo ./ha_heartbeat.sh --nodes "<NODE_IP_1>,<NODE_IP_2>,<NODE_IP_3>"
 ```
 
 ---
 
-#### 🟦 Step B: Scaling and Attaching Joiner Nodes (Thin Client 02 to N)
+## 💓 Heartbeat Monitoring (`ha_heartbeat.sh`)
 
-1. Establish an SSH session to your destination target machine.
+`ha_heartbeat.sh` supports:
 
-2. Clone the core repository suite onto the new system:
+- ICMP checks (default)
+- Optional TCP/UDP checks
+- Optional PCS/Corosync local snapshots
+- JSONL output for telemetry ingestion
+- Threshold-based eventing and optional failover hooks
+
+Use conservative probe settings in production networks to reduce false positives.
+
+---
+
+## ✅ Validation Checklist
+
 ```bash
-git clone https://github.com/universalbit-dev/HArmadillium.git
-cd HArmadillium/utility
-```
-
-3. Run the automated installer:
-```bash
-sudo ./dynamic_installer.sh
-```
-
-4. Choose **no** when prompted if this node is a master. Enter the static IP address belonging to **Thin Client 01 (Genesis Master)**. The machine will authenticate with the parent node and join the cluster.
-
-5. Re-synchronize the secure firewall mesh matrix across your nodes by providing the Master IP followed by the new peer node's local identity:
-```bash
-sudo ./ha_rules.sh <MASTER_IP_THIN_CLIENT_01> <LOCAL_IP_THIN_CLIENT_02>
+sudo pcs status
+sudo pcs status nodes
+sudo systemctl status pcsd --no-pager
+sudo systemctl status nginx --no-pager
+sudo systemctl status apache2 --no-pager
+sudo systemctl status ha-heartbeat.service --no-pager
+sudo ufw status numbered
 ```
 
 ---
 
-### 🧩 Phase 3: Apply the Extended Node Configuration
+## 🔐 Security Guidance
 
-After cluster bootstrap is complete, apply the correct node-specific configuration for the service layer.
-
-For example, on **Node 01**:
-
-```bash
-cd HArmadillium
-sudo cp nginx/01/default /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
-Repeat using the matching file for Node 02, Node 03, or Node 04 as needed.
+- Use strong cluster credentials.
+- Restrict private key permissions:
+  ```bash
+  chmod 600 utility/certs/*.key
+  ```
+- Treat logs and topology metadata as sensitive.
+- Avoid publishing real internal hostnames, IP ranges, or credential patterns in public docs/screenshots.
 
 ---
 
 ## 📚 Technical Documentation & External Resources
 
-##### Core System Operations
+### Core operations
+- [HArmadillium Core Architecture Wiki](HArmadillium.md)
+- [Nginx Configuration Guide](HArmadillium.md#nginx-configuration)
+- [Apache Webserver Guide](HArmadillium.md#webserver)
 
-* [HArmadillium Core Architecture Wiki](HArmadillium.md)
-* [Nginx Load Balancing and Configuration Guide](HArmadillium.md#nginx-configuration)
-* [Apache Virtual Host Port Bindings Reference](HArmadillium.md#webserver)
+### HA and security references
+- [Pacemaker & Corosync ClusterLabs](https://clusterlabs.org)
+- [UFW Reference](https://manpages.ubuntu.com/manpages/bionic/en/man8/ufw.8.html)
+- [Fail2Ban Project](https://github.com/fail2ban/fail2ban)
+- [OpenSSL SAN Notes](HArmadillium.md#self-signed-certificate-https-with-openssl)
 
-##### High Availability & Security Infrastructure
+### Optional advanced inspection
+- [SELKS / Clear NDR Community](https://www.stamus-networks.com/selks-archive)
 
-* [Pacemaker & Corosync Clusterlabs Home](https://clusterlabs.org)
-* [HAProxy Load Balancing Concepts](https://www.digitalocean.com/community/tutorials/an-introduction-to-haproxy-and-load-balancing-concepts)
-* [UFW Firewall Administration Reference](https://manpages.ubuntu.com/manpages/bionic/en/man8/ufw.8.html)
-* [Fail2Ban Intrusion Defensive Repositories](https://github.com/fail2ban/fail2ban)
-* [Cryptographic Implementations with OpenSSL SAN](HArmadillium.md#self-signed-certificate-https-with-openssl)
+---
 
-##### Basic Security Containment (Optional Advanced Inspection)
+## 📄 License
 
-* [SELKS is NOW Clear NDR - Community](https://www.stamus-networks.com/selks-archive)
+This project is licensed under the **MIT License**.  
+See the [LICENSE](LICENSE) file for details.
