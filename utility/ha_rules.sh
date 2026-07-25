@@ -5,73 +5,82 @@ echo "=========================================================="
 echo " HArmadillium Dynamic HA Firewall Component               "
 echo "=========================================================="
 
-log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [INFO] $*"; }
-warn() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [WARN] $*" >&2; }
-die()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [ERROR] $*" >&2; exit 1; }
+# Usage:
+#   ./ha_rules.sh --nodes <thinclient-IP-01>,<thinclient-IP-02>,<thinclient-IP-N>
+# Optional:
+#   --ssh-port 22
+#   --no-reset
 
-validate_ipv4() {
-  local ip="$1"
-  [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || return 1
-  IFS='.' read -r a b c d <<< "$ip"
-  for o in "$a" "$b" "$c" "$d"; do
-    (( o >= 0 && o <= 255 )) || return 1
-  done
-  return 0
-}
+NODES_CSV=""
+SSH_PORT="22"
+DO_RESET="yes"
 
-command -v ssh >/dev/null 2>&1 || die "ssh command not found"
-command -v ssh-keyscan >/dev/null 2>&1 || die "ssh-keyscan command not found"
-command -v ufw >/dev/null 2>&1 || die "ufw command not found"
-
-MASTER_IP="${1:-}"
-DETECTED_IP="${2:-}"
-SSH_USER="${3:-$(whoami)}"
-
-[[ -n "$MASTER_IP" && -n "$DETECTED_IP" ]] || die "Usage: ./ha_rules.sh <MASTER_IP> <LOCAL_IP> [SSH_USER]"
-validate_ipv4 "$MASTER_IP"  || die "Invalid MASTER_IP: $MASTER_IP"
-validate_ipv4 "$DETECTED_IP" || die "Invalid LOCAL_IP: $DETECTED_IP"
-
-CURRENT_USER="$(whoami)"
-USER_HOME="$HOME"
-KNOWN_HOSTS="$USER_HOME/.ssh/known_hosts"
-
-# Secure local SSH directory
-mkdir -p "$USER_HOME/.ssh"
-chmod 700 "$USER_HOME/.ssh"
-touch "$KNOWN_HOSTS"
-chmod 600 "$KNOWN_HOSTS"
-chown -R "${CURRENT_USER}:${CURRENT_USER}" "$USER_HOME/.ssh" || true
-
-# Safe host-key bootstrap: remove old entry then add fresh fingerprint
-log "Refreshing SSH known_hosts entry for ${MASTER_IP}..."
-ssh-keygen -R "$MASTER_IP" -f "$KNOWN_HOSTS" >/dev/null 2>&1 || true
-ssh-keyscan -H -T 5 "$MASTER_IP" >> "$KNOWN_HOSTS" 2>/dev/null || die "Unable to fetch SSH host key from ${MASTER_IP}"
-
-log "Fetching cluster node IPs from master ${SSH_USER}@${MASTER_IP}..."
-CONFIG_IPS="$(ssh -o BatchMode=yes -o ConnectTimeout=8 "${SSH_USER}@${MASTER_IP}" \
-  "grep -E 'ring[0-9]*_addr:' /etc/corosync/corosync.conf 2>/dev/null | awk '{print \$2}' | grep -E '^[0-9.]+$' || true")" || true
-
-# Build unique node set: discovered + master + local
-mapfile -t NODES < <(printf "%s\n%s\n%s\n" "$CONFIG_IPS" "$MASTER_IP" "$DETECTED_IP" \
-  | awk 'NF' | sort -u)
-
-if [[ ${#NODES[@]} -eq 0 ]]; then
-  die "No valid node IPs discovered."
-fi
-
-for ip in "${NODES[@]}"; do
-  validate_ipv4 "$ip" || die "Discovered invalid IP: $ip"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --nodes)    NODES_CSV="${2:-}"; shift 2 ;;
+    --ssh-port) SSH_PORT="${2:-22}"; shift 2 ;;
+    --no-reset) DO_RESET="no"; shift 1 ;;
+    *)
+      echo "❌ Unknown argument: $1"
+      exit 1
+      ;;
+  esac
 done
 
-log "Discovered cluster node grid: ${NODES[*]}"
+if [[ -z "$NODES_CSV" ]]; then
+  echo "Usage: $0 --nodes <ip1,ip2,ip3[,ip4]> [--ssh-port 22] [--no-reset]"
+  exit 1
+fi
 
-log "Resetting and applying UFW policy..."
-sudo ufw --force reset
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
+# Auto-detect local node IP from provided node list
+LOCAL_IP="$(hostname -I | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n1 || true)"
+if [[ -z "$LOCAL_IP" ]]; then
+  echo "❌ Could not detect local IPv4."
+  exit 1
+fi
 
-# Management access
-sudo ufw allow 22/tcp comment 'HArmadillium Management SSH'
+IFS=',' read -r -a RAW_NODES <<< "$NODES_CSV"
+NODES=()
+for ip in "${RAW_NODES[@]}"; do
+  ip="$(echo "$ip" | xargs)"
+  [[ "$ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && NODES+=("$ip")
+done
 
-# Cluster mesh rules scoped per node IP
+if [[ "${#NODES[@]}" -eq 0 ]]; then
+  echo "❌ No valid node IPs parsed from --nodes"
+  exit 1
+fi
+
+echo "ℹ️ Local IP detected: $LOCAL_IP"
+echo "ℹ️ Cluster nodes: ${NODES[*]}"
+
+if [[ "$DO_RESET" == "yes" ]]; then
+  echo "🧱 Resetting UFW..."
+  sudo ufw --force reset
+  sudo ufw default deny incoming
+  sudo ufw default allow outgoing
+fi
+
+# Public management / edge
+sudo ufw allow "${SSH_PORT}/tcp" comment 'HArmadillium Management SSH'
+sudo ufw allow 80/tcp   comment 'HArmadillium HTTP Redirect Edge'
+sudo ufw allow 443/tcp  comment 'HArmadillium Nginx TLS Edge'
+sudo ufw allow 3001/tcp comment 'HArmadillium Custom Dashboard UI'
+sudo ufw allow 4433/tcp comment 'HArmadillium Apache2 Secure Backend'
+
+# HA mesh from all declared nodes
 for NODE_IP in "${NODES[@]}"; do
+  sudo ufw allow from "$NODE_IP" to any port 2224 proto tcp comment "HA Cluster Mesh: PCSD from $NODE_IP"
+  sudo ufw allow from "$NODE_IP" to any port 3121 proto tcp comment "HA Cluster Mesh: Pacemaker CRM from $NODE_IP"
+  sudo ufw allow from "$NODE_IP" to any port 5404:5405 proto udp comment "HA Cluster Mesh: Totem Ring from $NODE_IP"
+  sudo ufw allow from "$NODE_IP" to any port 9929 proto tcp comment "HA Cluster Mesh: Corosync/QNetd from $NODE_IP"
+done
+
+# App exposure policy
+sudo ufw deny  8000/tcp comment 'Block Direct Unencrypted CNCjs Access'
+sudo ufw allow 8443/tcp comment 'UniversalBit CNCjs Secure Proxy'
+sudo ufw allow 9443/tcp comment 'GeoLibre secure reverse proxy'
+
+sudo ufw --force enable
+echo "✅ Done."
+sudo ufw status
