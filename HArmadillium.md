@@ -12,16 +12,16 @@
 * **Guide Concept:** [What is High Availability?](https://www.digitalocean.com/community/tutorials/what-is-high-availability)
 
 ### Quick Navigation
-* [Prerequisites & Package Installation](#-prerequisites--package-installation)
-* [Network & Node Setup](#-network--node-setup)
-* [Corosync Engine Configuration](#-corosync-engine-configuration)
-* [PCS: Pacemaker Configuration System](#-pcs-pacemaker-configuration-system)
-* [Creating Resources & High Availability IP](#-creating-resources--high-availability-ip)
-* [Web Server & SSL Setup (Nginx)](#-web-server--ssl-setup-nginx)
-* [Troubleshooting Guide](#-troubleshooting-guide)
+* [Prerequisites & Package Installation](#prerequisites--package-installation)
+* [Network & Node Setup](#network--node-setup)
+* [Corosync Engine Configuration](#corosync-engine-configuration)
+* [PCS: Pacemaker Configuration System](#pcs-pacemaker-configuration-system)
+* [Creating Resources & High Availability IP](#creating-resources--high-availability-ip)
+* [Web Server & SSL Setup (Nginx)](#web-server--ssl-setup-nginx)
+* [Troubleshooting Guide](#troubleshooting-guide)
 
 ---
-
+<div id="prerequisites--package-installation"></div>
 ## 🛠️ Prerequisites & Package Installation
 
 This document complements the `ha_cluster_setup.sh` script by detailing the manual configurations needed to complete the HA cluster configuration process.
@@ -45,7 +45,7 @@ sudo apt install --no-install-recommends corosync pacemaker fence-agents crmsh p
 ```
 
 ---
-
+<div id="network--node-setup"></div>
 ## 🌐 Network & Node Setup
 
 ### 1. Static IP Address
@@ -71,6 +71,7 @@ sudo ufw enable
 
 ---
 
+<div id="corosync-engine-configuration"></div>
 ## ⚙️ Corosync Engine Configuration
 
 The Corosync Cluster Engine provides group communication and membership tracking for High Availability.
@@ -156,7 +157,7 @@ sudo chmod 400 /etc/corosync/authkey
 ```
 
 ---
-
+<div id="pcs-pacemaker-configuration-system"></div>
 ## 🧩 PCS: Pacemaker Configuration System
 
 ### 1. Start the PCS Daemon & Set Passwords
@@ -199,6 +200,7 @@ sudo pcs property set no-quorum-policy=ignore
 
 ---
 
+<div id="creating-resources--high-availability-ip"></div>
 ## 📦 Creating Resources & High Availability IP
 
 ### 1. Web Server Resource
@@ -232,7 +234,7 @@ sudo pcs cluster enable --all
 ```
 
 ---
-
+<div id="web-server--ssl-setup-nginx"></div>
 ## 🌐 Web Server & SSL Setup (Nginx)
 
 Generate self-signed SSL certificates for secure proxy deployment:
@@ -249,7 +251,7 @@ sudo openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 Apply node-specific configurations for [NGINX](https://github.com/universalbit-dev/HArmadillium/tree/main/nginx).
 
 ---
-
+<div id="troubleshooting-guide"></div>
 ## 🔍 Troubleshooting Guide
 
 ### Common Error: 401 Unauthorized via PCSD
