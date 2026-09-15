@@ -5,13 +5,9 @@
 
 ---
 
-## 📊 High Availability Cluster Setup Flowchart
+## 📊 High Availability Cluster Setup 
 ---
-
-* [ThinClient] Setup:[Armadillium](https://github.com/universalbit-dev/armadillium)
-<img src="https://github.com/universalbit-dev/HArmadillium/blob/main/docs/assets/images/ecosystem_gran_canaria_edited.png" width="auto" />
-
-* ## [What is High Availability?](https://www.digitalocean.com/community/tutorials/what-is-high-availability)
+* #### [What is High Availability?](https://www.digitalocean.com/community/tutorials/what-is-high-availability)
 
 **Required Packages**: Lists necessary software like `python3`, `corosync`, `pacemaker`, `fence-agents`, `crmsh`, `pcs`, `nginx`, and more.
 
@@ -57,39 +53,20 @@ sudo apt install corosync pacemaker fence-agents crmsh pcs* cluster-glue ufw ngi
 
 Ensure that each node is configured with a static IP address by following the setup guide linked above.
 
+**[Explore Core Utilities](https://github.com/universalbit-dev/HArmadillium/tree/main/utility)**
+
 ### Host
-
 **Edit the Host File for Each Node**  
-To configure the host file on each node, use the following command:  
-```bash
-sudo nano /etc/hosts
-```
-
-**Reference:**  
-- [Setup Instructions](https://github.com/universalbit-dev/HArmadillium/blob/main/host/readme.md)  
-
 **Note:** Ensure that the host file is properly edited and configured on every node.
 
 ### UFW Firewall Rules for Each Node
-
-The Uncomplicated Firewall (UFW) is a user-friendly front-end for managing iptables, simplifying the process of configuring a Netfilter firewall. It provides a command-line interface with syntax inspi[...]
-
-**Commands for Configuration:**
-```bash
-sudo ufw allow from 192.168.1.141
-sudo ufw allow from 192.168.1.142
-sudo ufw allow from 192.168.1.143
-sudo ufw allow from 192.168.1.144
-sudo ufw allow ssh
-```
-
+The Uncomplicated Firewall (UFW) is a user-friendly front-end for managing iptables, simplifying the process of configuring a Netfilter firewall.
 **Note:**  
 Ensure that these firewall rules are applied to each node to maintain proper network access and security.
 
 ### SSH Connection to Communicate with All Nodes
-
 **OpenSSH**  
-Ensure that each node has SSH enabled to allow secure communication between nodes. OpenSSH is a widely-used tool for managing secure shell (SSH) connections, providing encryption for data transfer and[...]
+Ensure that each node has SSH enabled to allow secure communication between nodes. OpenSSH is a widely-used tool for managing secure shell (SSH) connections, providing encryption for data transfer.
 
 **References:**
 - [OpenSSH Documentation](https://www.openssh.com/)
